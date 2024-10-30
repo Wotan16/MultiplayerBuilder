@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6688d89f35372ef4493279ea418d74a6, type: 3}
+  m_Name: Cement
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 3843142252039978166, guid: 601a1c225a5b75a4b985197d8d0d3400, type: 3}
+  pickupName: Cement

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Player : NetworkBehaviour
 {
+    public static Player LocalInstance { get; private set; }
+
     [SerializeField]
     private float maxSpeed;
     [SerializeField]
@@ -36,6 +39,16 @@ public class Player : NetworkBehaviour
     [SerializeField]
     private float acceleration;
 
+    private Pickup carriedItem;
+    public bool HandsBusy { get { return carriedItem != null; } }
+
+    [SerializeField]
+    private PlayerInteraction interaction;
+    public Transform InteractionPoint { get { return interaction.InteractionPoint; } }
+
+    [SerializeField]
+    private PickupSO testSO;
+
     private void Start()
     {
         mainCameraTransform = Camera.main.transform;
@@ -51,14 +64,25 @@ public class Player : NetworkBehaviour
         HandleGravity();
         HandleAcceleration();
         Move();
-        RotateTowardsPlayer();
+        RotateTowardMovement();
 
         animator.SetBool("IsGrounded", isGrounded);
+        animator.SetBool("IsCarrying", HandsBusy);
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            bool value = animator.GetBool("IsCarrying");
-            animator.SetBool("IsCarrying", !value);
+            carriedItem = null;
         }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Pickup.SpawnPickup(testSO, interaction.InteractionPoint.position);
+        }
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        if (IsOwner)
+            LocalInstance = this;
     }
 
     private void HandleAcceleration()
@@ -97,7 +121,7 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public virtual void RotateTowardsPlayer()
+    public virtual void RotateTowardMovement()
     {
         if (inputDirection == Vector2.zero)
             return;
@@ -119,6 +143,11 @@ public class Player : NetworkBehaviour
         Vector3 forwardMovement = cameraForward.normalized * inputDirection.y;
         Vector3 direction = (rightMovement + forwardMovement).normalized;
         return direction;
+    }
+
+    public void PickUpItem(Pickup pickup)
+    {
+        carriedItem = pickup;
     }
 
     #region InputEvents
@@ -154,8 +183,22 @@ public class Player : NetworkBehaviour
         }
     }
 
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (!IsOwner || !IsSpawned)
+            return;
+
+        if (!context.started)
+            return;
+
+        if (interaction.SelectedInteractable != null)
+        {
+            interaction.SelectedInteractable.OnInteract(this);
+        }
+    }
+
     #endregion
 
-    
+
 }
     
