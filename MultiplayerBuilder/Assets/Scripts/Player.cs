@@ -40,11 +40,14 @@ public class Player : NetworkBehaviour
     private float acceleration;
 
     private Pickup carriedItem;
+    public Pickup CarriedItem { get { return carriedItem; } }
     public bool HandsBusy { get { return carriedItem != null; } }
 
     [SerializeField]
     private PlayerInteraction interaction;
-    public Transform InteractionPoint { get { return interaction.InteractionPoint; } }
+    [SerializeField]
+    private Transform carriedObjectParent;
+    public Transform CarriedObjectParent { get { return carriedObjectParent; } }
 
     [SerializeField]
     private PickupSO testSO;
@@ -68,13 +71,13 @@ public class Player : NetworkBehaviour
 
         animator.SetBool("IsGrounded", isGrounded);
         animator.SetBool("IsCarrying", HandsBusy);
+
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            carriedItem = null;
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Pickup.SpawnPickup(testSO, interaction.InteractionPoint.position);
+            Pickup.SpawnPickup(testSO, carriedObjectParent.position);
         }
     }
 
@@ -145,9 +148,24 @@ public class Player : NetworkBehaviour
         return direction;
     }
 
+    public void DropItem()
+    {
+        if (HandsBusy)
+        {
+            carriedItem.OnDrop();
+            carriedItem = null;
+        }
+    }
+
     public void PickUpItem(Pickup pickup)
     {
         carriedItem = pickup;
+        carriedItem.OnPickupDespawned += CarriedItem_OnPickupDespawned;
+    }
+
+    private void CarriedItem_OnPickupDespawned(object sender, System.EventArgs e)
+    {
+        carriedItem = null;
     }
 
     #region InputEvents
@@ -194,6 +212,21 @@ public class Player : NetworkBehaviour
         if (interaction.SelectedInteractable != null)
         {
             interaction.SelectedInteractable.OnInteract(this);
+        }
+    }
+
+    public void OnInteractAlternative(InputAction.CallbackContext context)
+    {
+        if (!IsOwner || !IsSpawned)
+            return;
+
+        if (!context.started)
+            return;
+
+        if (HandsBusy)
+        {
+            carriedItem.OnDrop();
+            carriedItem = null;
         }
     }
 

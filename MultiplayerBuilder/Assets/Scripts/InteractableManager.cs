@@ -27,12 +27,12 @@ public class InteractableManager : NetworkBehaviour
         pickup.NetworkObject.Spawn();
     }
 
-    private int GetPickupSOIndex(PickupSO pickupSO)
+    public static int GetPickupSOIndex(PickupSO pickupSO)
     {
-        return pickupListSO.list.IndexOf(pickupSO);
+        return Instance.pickupListSO.list.IndexOf(pickupSO);
     }
-    private PickupSO GetPickupSOFromIndex(int index)
+    public static PickupSO GetPickupSOFromIndex(int index)
     {
-        return pickupListSO.list[index];
+        return Instance.pickupListSO.list[index];
     }
 }

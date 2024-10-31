@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6688d89f35372ef4493279ea418d74a6, type: 3}
-  m_Name: Cement
+  m_Name: SandBag
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3843142252039978166, guid: 601a1c225a5b75a4b985197d8d0d3400, type: 3}
-  pickupName: Cement
+  prefab: {fileID: 4595593773511048451, guid: 4b98b0bfd74f26d4a8a2aa0449ddb316, type: 3}
+  pickupName: Sand Bag
