@@ -9,9 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d165bc20d23edec44840c52a278d6e1f, type: 3}
-  m_Name: PickupListSO
+  m_Script: {fileID: 11500000, guid: 7473f9ebabcdca84facf022eb92d4ffb, type: 3}
+  m_Name: SandBag
   m_EditorClassIdentifier: 
-  list:
-  - {fileID: 11400000, guid: 6b9dfae81a9b0584f9d81fac8e637553, type: 2}
-  - {fileID: 11400000, guid: ba302f3e9425fa541afa3cad510c6218, type: 2}
+  prefab: {fileID: 0}
+  containerName: Sand Bag
+  containableResources:
+  - {fileID: 11400000, guid: e8f7e174742eddd4d8d81d9826964325, type: 2}
+  isDisposable: 1
+  filledByDefault: 1

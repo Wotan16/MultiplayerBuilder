@@ -7,32 +7,45 @@ public class InteractableManager : NetworkBehaviour
     public static InteractableManager Instance { get; private set; }
 
     [SerializeField]
-    private PickupListSO pickupListSO;
+    private ContainerListSO containerListSO;
+    [SerializeField]
+    private ResourceListSO resourceListSO;
 
     private void Awake()
     {
         Instance = this;
     }
 
-    public void SpawnPickup(PickupSO pickupSO, Vector3 position)
+    public void SpawnContainer(ContainerSO containerSO, Vector3 position)
     {
-        SpawnPickupServerRpc(GetPickupSOIndex(pickupSO), position);
+        SpawnPickupServerRpc(GetContainerSOIndex(containerSO), position);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SpawnPickupServerRpc(int pickupSOIndex, Vector3 position)
+    private void SpawnPickupServerRpc(int containerSOIndex, Vector3 position)
     {
-        PickupSO pickupSO = GetPickupSOFromIndex(pickupSOIndex);
-        Pickup pickup = Instantiate(pickupSO.prefab, position, Quaternion.identity);
-        pickup.NetworkObject.Spawn();
+        ContainerSO containerSO = GetContainerSOFromIndex(containerSOIndex);
+        Container container = Instantiate(containerSO.prefab, position, Quaternion.identity);
+        container.NetworkObject.Spawn();
     }
 
-    public static int GetPickupSOIndex(PickupSO pickupSO)
+    public static int GetContainerSOIndex(ContainerSO containerSO)
     {
-        return Instance.pickupListSO.list.IndexOf(pickupSO);
+        return Instance.containerListSO.list.IndexOf(containerSO);
     }
-    public static PickupSO GetPickupSOFromIndex(int index)
+
+    public static ContainerSO GetContainerSOFromIndex(int index)
     {
-        return Instance.pickupListSO.list[index];
+        return Instance.containerListSO.list[index];
+    }
+
+    public static int GetResourceSOIndex(ResourceSO resourceSO)
+    {
+        return Instance.resourceListSO.list.IndexOf(resourceSO);
+    }
+
+    public static ResourceSO GetResourceSOFromIndex(int index)
+    {
+        return Instance.resourceListSO.list[index];
     }
 }

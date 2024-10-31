@@ -43,26 +43,27 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
         if (!player.HandsBusy)
             return false;
 
-        return CanAddItem(player.CarriedItem.PickupSO);
+        return CanAddItem(player.CarriedContainer.ContainedResorceSO);
     }
 
     public virtual void OnInteract(Player player)
     {
-        int pickupIndex = InteractableManager.GetPickupSOIndex(player.CarriedItem.PickupSO);
-        AddPickupServerRpc(player);
+        int pickupIndex = InteractableManager.GetResourceSOIndex(player.CarriedContainer.ContainedResorceSO);
+        AddResourceServerRpc(player);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void AddPickupServerRpc(NetworkBehaviourReference playerReference)
+    private void AddResourceServerRpc(NetworkBehaviourReference playerReference)
     {
         if (!playerReference.TryGet(out Player player))
             return;
 
-        if (!CanAddItem(player.CarriedItem.PickupSO))
+        if (!CanAddItem(player.CarriedContainer.ContainedResorceSO))
             return;
 
-        recipeHandler.AddIngredient(player.CarriedItem.PickupSO);
-        player.CarriedItem.NetworkObject.Despawn(true);
+        recipeHandler.AddIngredient(player.CarriedContainer.ContainedResorceSO);
+        player.CarriedContainer.EmptyContainer();
+        //player.CarriedContainer.NetworkObject.Despawn(true);
 
         if (recipeHandler.IsRecipeCompleted())
             StartCrafting();
@@ -75,10 +76,10 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
         Debug.Log("StartMixing");
     }
 
-    private bool CanAddItem(PickupSO pickupSO)
+    private bool CanAddItem(ResourceSO resourceSO)
     {
         return currentState.Value == CraftingStationState.WaitingForIngridients &&
-            recipeHandler.IsIngredientNeeded(pickupSO);
+            recipeHandler.IsIngredientNeeded(resourceSO);
     }
 
     private float GetNormalizedCraftingTime()

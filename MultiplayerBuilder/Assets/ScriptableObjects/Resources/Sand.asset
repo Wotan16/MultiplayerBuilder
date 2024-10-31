@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6688d89f35372ef4493279ea418d74a6, type: 3}
-  m_Name: SandBag
+  m_Script: {fileID: 11500000, guid: fd7c5855fa327ea40b62a0253566a5b9, type: 3}
+  m_Name: Sand
   m_EditorClassIdentifier: 
-  prefab: {fileID: 4595593773511048451, guid: 4b98b0bfd74f26d4a8a2aa0449ddb316, type: 3}
-  pickupName: Sand Bag
+  resourceName: Sand

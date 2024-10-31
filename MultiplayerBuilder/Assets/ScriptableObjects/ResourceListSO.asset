@@ -9,11 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ceef3f6939583c4e998db7b90e8bf3f, type: 3}
-  m_Name: ConcreteRecipeSO
+  m_Script: {fileID: 11500000, guid: f3d117244fb4ab047a8b00c558e0781b, type: 3}
+  m_Name: ResourceListSO
   m_EditorClassIdentifier: 
-  recipeList:
+  list:
   - {fileID: 11400000, guid: e6ac9741d7d568043b57abb160d54f1e, type: 2}
   - {fileID: 11400000, guid: e8f7e174742eddd4d8d81d9826964325, type: 2}
-  - {fileID: 11400000, guid: e8f7e174742eddd4d8d81d9826964325, type: 2}
-  timeToMake: 3
+  - {fileID: 11400000, guid: 57da9c1ebfcdd4941ab0cd0199bb88b9, type: 2}

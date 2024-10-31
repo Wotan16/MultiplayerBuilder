@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6688d89f35372ef4493279ea418d74a6, type: 3}
-  m_Name: CementBag
+  m_Script: {fileID: 11500000, guid: b61251b866387464996863ca234c15df, type: 3}
+  m_Name: ContainerListSO
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3843142252039978166, guid: 601a1c225a5b75a4b985197d8d0d3400, type: 3}
-  pickupName: Cement Bag
+  list:
+  - {fileID: 11400000, guid: ce53eda5a5f837c47accda80e0931507, type: 2}
+  - {fileID: 11400000, guid: 6ffb5913b8388234e9eb1dd7435155eb, type: 2}

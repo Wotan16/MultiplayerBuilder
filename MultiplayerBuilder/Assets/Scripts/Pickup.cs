@@ -17,6 +17,8 @@ public class Pickup : NetworkBehaviour, IInteractable
     private FollowTransform followTransform;
     private MyTransformSync worldTransformSync;
 
+    private bool isContainer;
+
     public bool IsCarried { get { return carryingPlayer != null; } }
 
     private void Awake()
@@ -24,8 +26,6 @@ public class Pickup : NetworkBehaviour, IInteractable
         rb = GetComponent<Rigidbody>();
         followTransform = GetComponent<FollowTransform>();
         worldTransformSync = GetComponent<MyTransformSync>();
-
-
     }
 
     private void Start()
@@ -59,28 +59,28 @@ public class Pickup : NetworkBehaviour, IInteractable
     [ServerRpc(RequireOwnership = false)]
     private void SetCarriedPlayerServerRpc(NetworkBehaviourReference playerReference)
     {
-        if (!playerReference.TryGet(out Player player))
-            return;
+        //if (!playerReference.TryGet(out Player player))
+        //    return;
 
-        player.PickUpItem(this);
-        rb.isKinematic = true;
-        followTransform.TargetTransform = player.CarriedObjectParent;
-        carryingPlayer = player;
-        worldTransformSync.enableSync.Value = false;
+        //player.PickUpItem(this);
+        //rb.isKinematic = true;
+        //followTransform.TargetTransform = player.CarriedObjectParent;
+        //carryingPlayer = player;
+        //worldTransformSync.enableSync.Value = false;
 
-        SetCarriedPlayerClientRpc(playerReference);
+        //SetCarriedPlayerClientRpc(playerReference);
     }
 
     [ClientRpc]
     private void SetCarriedPlayerClientRpc(NetworkBehaviourReference playerReference)
     {
-        if (!playerReference.TryGet(out Player player))
-            return;
+        //if (!playerReference.TryGet(out Player player))
+        //    return;
 
-        player.PickUpItem(this);
-        rb.isKinematic = true;
-        followTransform.TargetTransform = player.CarriedObjectParent;
-        carryingPlayer = player;
+        //player.PickUpItem(this);
+        //rb.isKinematic = true;
+        //followTransform.TargetTransform = player.CarriedObjectParent;
+        //carryingPlayer = player;
     }
 
     public void OnDrop()
@@ -107,7 +107,7 @@ public class Pickup : NetworkBehaviour, IInteractable
 
     public static void SpawnPickup(PickupSO pickupSO, Vector3 position)
     {
-        InteractableManager.Instance.SpawnPickup(pickupSO, position);
+        //InteractableManager.Instance.SpawnPickup(pickupSO, position);
     }
 
     public override void OnNetworkDespawn()

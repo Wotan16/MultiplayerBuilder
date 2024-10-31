@@ -39,9 +39,9 @@ public class Player : NetworkBehaviour
     [SerializeField]
     private float acceleration;
 
-    private Pickup carriedItem;
-    public Pickup CarriedItem { get { return carriedItem; } }
-    public bool HandsBusy { get { return carriedItem != null; } }
+    private Container carriedContainer;
+    public Container CarriedContainer { get { return carriedContainer; } }
+    public bool HandsBusy { get { return carriedContainer != null; } }
 
     [SerializeField]
     private PlayerInteraction interaction;
@@ -152,20 +152,31 @@ public class Player : NetworkBehaviour
     {
         if (HandsBusy)
         {
-            carriedItem.OnDrop();
-            carriedItem = null;
+            carriedContainer.OnDrop();
+            carriedContainer = null;
         }
     }
 
-    public void PickUpItem(Pickup pickup)
+    public void PickUpItem(Container container)
     {
-        carriedItem = pickup;
-        carriedItem.OnPickupDespawned += CarriedItem_OnPickupDespawned;
+        carriedContainer = container;
     }
 
-    private void CarriedItem_OnPickupDespawned(object sender, System.EventArgs e)
+    public void OnInteract()
     {
-        carriedItem = null;
+        if (interaction.SelectedInteractable != null)
+        {
+            interaction.SelectedInteractable.OnInteract(this);
+        }
+    }
+
+    public void OnInteractAlternative()
+    {
+        if (HandsBusy)
+        {
+            carriedContainer.OnDrop();
+            carriedContainer = null;
+        }
     }
 
     #region InputEvents
@@ -209,10 +220,7 @@ public class Player : NetworkBehaviour
         if (!context.started)
             return;
 
-        if (interaction.SelectedInteractable != null)
-        {
-            interaction.SelectedInteractable.OnInteract(this);
-        }
+        OnInteract();
     }
 
     public void OnInteractAlternative(InputAction.CallbackContext context)
@@ -223,11 +231,7 @@ public class Player : NetworkBehaviour
         if (!context.started)
             return;
 
-        if (HandsBusy)
-        {
-            carriedItem.OnDrop();
-            carriedItem = null;
-        }
+        OnInteractAlternative();
     }
 
     #endregion

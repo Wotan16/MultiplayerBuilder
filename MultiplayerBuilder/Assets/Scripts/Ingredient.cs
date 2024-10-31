@@ -1,11 +1,11 @@
 public class Ingredient
 {
     public bool Contained;
-    public PickupSO PickupSO;
+    public ResourceSO ResourceSO;
 
-    public Ingredient(PickupSO pickupSO)
+    public Ingredient(ResourceSO resourceSO)
     {
         Contained = false;
-        PickupSO = pickupSO;
+        ResourceSO = resourceSO;
     }
 }

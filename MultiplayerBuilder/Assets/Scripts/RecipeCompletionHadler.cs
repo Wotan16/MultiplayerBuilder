@@ -11,19 +11,19 @@ public class RecipeCompletionHadler
     {
         this.recipeSO = recipeSO;
         addedIgredients = new List<Ingredient>();
-        foreach(PickupSO pickupSO in recipeSO.recipeList)
+        foreach(ResourceSO resourceSO in recipeSO.recipeList)
         {
-            addedIgredients.Add(new Ingredient(pickupSO));
+            addedIgredients.Add(new Ingredient(resourceSO));
         }
     }
 
-    public void AddIngredient(PickupSO pickupSO)
+    public void AddIngredient(ResourceSO resourceSO)
     {
         foreach (Ingredient ingredient in addedIgredients)
         {
             if (ingredient.Contained)
                 continue;
-            if (ingredient.PickupSO != pickupSO)
+            if (ingredient.ResourceSO != resourceSO)
                 continue;
 
             ingredient.Contained = true;
@@ -41,13 +41,13 @@ public class RecipeCompletionHadler
         return true;
     }
 
-    public bool IsIngredientNeeded(PickupSO pickupSO)
+    public bool IsIngredientNeeded(ResourceSO resourceSO)
     {
         foreach (Ingredient ingredient in addedIgredients)
         {
             if (ingredient.Contained)
                 continue;
-            if (ingredient.PickupSO != pickupSO)
+            if (ingredient.ResourceSO != resourceSO)
                 continue;
             return true;
         }
