@@ -1,10 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(FollowTransform))]
+[RequireComponent(typeof(MyTransformSync))]
 public class Container : NetworkBehaviour, IInteractable
 {
+    public event EventHandler OnContainedResourceSOChanged;
+
     [SerializeField]
     private ContainerSO containerSO;
     public ContainerSO ContainerSO { get { return containerSO; } }
@@ -25,7 +31,7 @@ public class Container : NetworkBehaviour, IInteractable
     private MyTransformSync worldTransformSync;
     
 
-    private void Awake()
+    protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody>();
         followTransform = GetComponent<FollowTransform>();
@@ -138,12 +144,13 @@ public class Container : NetworkBehaviour, IInteractable
         AddResourceServerRpc(resourceSOIndex);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void AddResourceServerRpc(int resourceSOIndex)
     {
         ResourceSO resourceSO = InteractableManager.GetResourceSOFromIndex(resourceSOIndex);
         containedResourceSO = resourceSO;
         AddResourceClientRpc(resourceSOIndex);
+        OnContainedResourceSOChanged?.Invoke(this, EventArgs.Empty);
     }
 
     [ClientRpc]
@@ -151,11 +158,17 @@ public class Container : NetworkBehaviour, IInteractable
     {
         ResourceSO resourceSO = InteractableManager.GetResourceSOFromIndex(resourceSOIndex);
         containedResourceSO = resourceSO;
+        OnContainedResourceSOChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public bool CanAddResource(ResourceSO resourceSO)
+    {
+        return CanContainResource(resourceSO) && IsEmpty;
     }
 
     public bool TryAddResource(ResourceSO resourceSO)
     {
-        if (CanContainResource(resourceSO))
+        if (CanAddResource(resourceSO))
         {
             AddResource(resourceSO);
             return true;
@@ -168,10 +181,9 @@ public class Container : NetworkBehaviour, IInteractable
         EmptyContainerServerRpc();
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void EmptyContainerServerRpc()
     {
-        Debug.Log("container empty");
         if (IsDisposable)
         {
             NetworkObject.Despawn(true);
@@ -179,13 +191,14 @@ public class Container : NetworkBehaviour, IInteractable
         }
         containedResourceSO = null;
         EmptyContainerClientRpc();
+        OnContainedResourceSOChanged?.Invoke(this, EventArgs.Empty);
     }
 
     [ClientRpc]
     private void EmptyContainerClientRpc()
     {
         containedResourceSO = null;
-        Debug.Log("container empty");
+        OnContainedResourceSOChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public bool TryEmptyContainer()

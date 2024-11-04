@@ -49,14 +49,15 @@ public class Player : NetworkBehaviour
     private Transform carriedObjectParent;
     public Transform CarriedObjectParent { get { return carriedObjectParent; } }
 
-    [SerializeField]
-    private PickupSO testSO;
+    private void Awake()
+    {
+        controller = GetComponent<CharacterController>();
+        currentSpeed = 0f;
+    }
 
     private void Start()
     {
         mainCameraTransform = Camera.main.transform;
-        controller = GetComponent<CharacterController>();
-        currentSpeed = 0f;
     }
 
     private void Update()
@@ -77,7 +78,6 @@ public class Player : NetworkBehaviour
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Pickup.SpawnPickup(testSO, carriedObjectParent.position);
         }
     }
 
@@ -86,6 +86,19 @@ public class Player : NetworkBehaviour
         base.OnNetworkSpawn();
         if (IsOwner)
             LocalInstance = this;
+
+        if (IsServer)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+        }
+    }
+
+    private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
+    {
+        if(clientId == OwnerClientId && HandsBusy)
+        {
+            DropItem();
+        }
     }
 
     private void HandleAcceleration()

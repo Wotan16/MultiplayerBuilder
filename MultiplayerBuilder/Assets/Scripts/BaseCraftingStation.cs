@@ -43,7 +43,7 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
         if (!player.HandsBusy)
             return false;
 
-        return CanAddItem(player.CarriedContainer.ContainedResorceSO);
+        return CanAddResource(player.CarriedContainer.ContainedResorceSO);
     }
 
     public virtual void OnInteract(Player player)
@@ -58,12 +58,11 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
         if (!playerReference.TryGet(out Player player))
             return;
 
-        if (!CanAddItem(player.CarriedContainer.ContainedResorceSO))
+        if (!CanAddResource(player.CarriedContainer.ContainedResorceSO))
             return;
 
         recipeHandler.AddIngredient(player.CarriedContainer.ContainedResorceSO);
         player.CarriedContainer.EmptyContainer();
-        //player.CarriedContainer.NetworkObject.Despawn(true);
 
         if (recipeHandler.IsRecipeCompleted())
             StartCrafting();
@@ -73,16 +72,16 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
     {
         currentState.Value = CraftingStationState.Crafting;
         timeToMixLeft = recipeSO.timeToMake;
-        Debug.Log("StartMixing");
+        Debug.Log("StartCrafting");
     }
 
-    private bool CanAddItem(ResourceSO resourceSO)
+    private bool CanAddResource(ResourceSO resourceSO)
     {
         return currentState.Value == CraftingStationState.WaitingForIngridients &&
             recipeHandler.IsIngredientNeeded(resourceSO);
     }
 
-    private float GetNormalizedCraftingTime()
+    protected float GetNormalizedCraftingTime()
     {
         return timeToMixLeft / recipeSO.timeToMake;
     }
