@@ -6,6 +6,7 @@ public class RecipeCompletionHadler
 {
     private RecipeSO recipeSO;
     private List<Ingredient> addedIgredients;
+    public List<Ingredient> AddedIgredients { get { return addedIgredients; } }
 
     public RecipeCompletionHadler(RecipeSO recipeSO)
     {

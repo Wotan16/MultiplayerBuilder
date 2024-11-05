@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Concrete
   m_EditorClassIdentifier: 
   resourceName: Concrete
+  sprite: {fileID: 21300000, guid: cd2676474bb1dd24f8ace8a44792da60, type: 3}

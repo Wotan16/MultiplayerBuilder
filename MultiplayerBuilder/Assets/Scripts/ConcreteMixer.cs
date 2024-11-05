@@ -14,6 +14,20 @@ public class ConcreteMixer : BaseCraftingStation
     {
         base.Awake();
         visual.DisableOutline();
+        visual.UpdateResourceIcons(recipeHandler);
+        OnResourceAddedOnClient += ConcreteMixer_OnResourceAddedOnClient;
+        OnStartedCraftingOnClient += ConcreteMixer_OnStartedCraftingOnClient;
+    }
+
+    private void ConcreteMixer_OnStartedCraftingOnClient(object sender, System.EventArgs e)
+    {
+        visual.HideResourceIcons();
+    }
+
+    private void ConcreteMixer_OnResourceAddedOnClient(object sender, System.EventArgs e)
+    {
+        visual.ShowResourceIcons();
+        visual.UpdateResourceIcons(recipeHandler);
     }
 
     public override void OnSelected()

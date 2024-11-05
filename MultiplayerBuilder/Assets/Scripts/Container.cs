@@ -24,6 +24,8 @@ public class Container : NetworkBehaviour, IInteractable
 
     [SerializeField]
     private Outline outline;
+    [SerializeField]
+    private ContainerResourceUI containerResourceUI;
 
     private Player carryingPlayer;
     private Rigidbody rb;
@@ -36,8 +38,8 @@ public class Container : NetworkBehaviour, IInteractable
         rb = GetComponent<Rigidbody>();
         followTransform = GetComponent<FollowTransform>();
         worldTransformSync = GetComponent<MyTransformSync>();
-        
     }
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -57,6 +59,9 @@ public class Container : NetworkBehaviour, IInteractable
             worldTransformSync.enableSync.Value = true;
         else
             rb.isKinematic = true;
+
+        containerResourceUI.SetResourceUI(ContainedResorceSO);
+        containerResourceUI.Hide();
     }
 
     public bool CanPlayerInteract(Player player)
@@ -71,11 +76,16 @@ public class Container : NetworkBehaviour, IInteractable
 
     public void OnSelected()
     {
+        if(!IsEmpty)
+            containerResourceUI.Show();
+
         outline.enabled = true;
     }
 
     public void OnDeselected()
     {
+        if(!IsCarried)
+            containerResourceUI.Hide();
         outline.enabled = false;
     }
 
@@ -126,6 +136,7 @@ public class Container : NetworkBehaviour, IInteractable
     {
         carryingPlayer = null;
         followTransform.TargetTransform = null;
+        containerResourceUI.Hide();
     }
 
     public bool CanContainResource(ResourceSO resourceSO)
@@ -158,6 +169,8 @@ public class Container : NetworkBehaviour, IInteractable
     {
         ResourceSO resourceSO = InteractableManager.GetResourceSOFromIndex(resourceSOIndex);
         containedResourceSO = resourceSO;
+        containerResourceUI.SetResourceUI(ContainedResorceSO);
+        containerResourceUI.Show();
         OnContainedResourceSOChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -199,6 +212,7 @@ public class Container : NetworkBehaviour, IInteractable
     {
         containedResourceSO = null;
         OnContainedResourceSOChanged?.Invoke(this, EventArgs.Empty);
+        containerResourceUI.Hide();
     }
 
     public bool TryEmptyContainer()

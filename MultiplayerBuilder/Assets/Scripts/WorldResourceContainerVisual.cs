@@ -1,31 +1,36 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConcreteMixerVisual : MonoBehaviour
+public class WorldResourceContainerVisual : MonoBehaviour
 {
     [SerializeField]
     private List<Outline> outlines;
     [SerializeField]
     private Transform resourceIconsParent;
     [SerializeField]
-    private IngredientIconUI iconPrefab;
+    private ContainerResourceUI iconPrefab;
 
-    public void UpdateResourceIcons(RecipeCompletionHadler recipeCompletionHadler)
+    public void UpdateResourceIcons(ResourceSO resourceSO, int numberOfUses)
     {
         ClearIcons();
-        foreach (Ingredient ingredient in recipeCompletionHadler.AddedIgredients)
+
+        if (numberOfUses == 0)
         {
-            IngredientIconUI icon = Instantiate(iconPrefab, resourceIconsParent);
-            icon.SetResourceUI(ingredient.ResourceSO);
-            icon.SetIsCompleted(ingredient.Contained);
+            HideResourceIcons();
+            return;
+        }
+
+        for (int i = 0; i < numberOfUses; i++)
+        {
+            ContainerResourceUI icon = Instantiate(iconPrefab, resourceIconsParent);
+            icon.SetResourceUI(resourceSO);
             icon.Show();
         }
     }
 
     private void ClearIcons()
     {
-        foreach(Transform child in resourceIconsParent)
+        foreach (Transform child in resourceIconsParent)
         {
             Destroy(child.gameObject);
         }

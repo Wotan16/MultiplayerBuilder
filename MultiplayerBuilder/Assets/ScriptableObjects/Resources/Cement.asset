@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Cement
   m_EditorClassIdentifier: 
   resourceName: Cement
+  sprite: {fileID: 21300000, guid: e6314b3bd1f1707418f2d2851d47485b, type: 3}

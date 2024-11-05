@@ -1,8 +1,12 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
 public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
 {
+    public event EventHandler OnResourceAddedOnClient;
+    public event EventHandler OnStartedCraftingOnClient;
+
     [SerializeField]
     protected RecipeSO recipeSO;
 
@@ -16,7 +20,7 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
     [SerializeField]
     private Collider worldResourceContainerCollider;
     [SerializeField]
-    private WorldResourceContainer worldResourceContainer;
+    protected WorldResourceContainer worldResourceContainer;
     [SerializeField]
     private ResourceSO outputResource;
     [SerializeField]
@@ -65,7 +69,7 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
     }
 
     [ClientRpc]
-    private void OnContainerEmptyClientRpc()
+    protected virtual void OnContainerEmptyClientRpc()
     {
         if (!IsHost)
             recipeHandler = new RecipeCompletionHadler(recipeSO);
@@ -127,6 +131,7 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
     {
         ResourceSO resourceSO = InteractableManager.GetResourceSOFromIndex(resourceIndex);
         recipeHandler.AddIngredient(resourceSO);
+        OnResourceAddedOnClient?.Invoke(this, EventArgs.Empty);
     }
 
     private void StartCrafting()
@@ -134,6 +139,13 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
         currentState.Value = CraftingStationState.Crafting;
         timeToMixLeft = recipeSO.timeToMake;
         Debug.Log("StartCrafting");
+        StartCraftingClientRpc();
+    }
+
+    [ClientRpc]
+    private void StartCraftingClientRpc()
+    {
+        OnStartedCraftingOnClient?.Invoke(this, EventArgs.Empty);
     }
 
     private bool CanAddResource(ResourceSO resourceSO)

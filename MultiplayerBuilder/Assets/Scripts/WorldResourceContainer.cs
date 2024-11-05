@@ -1,21 +1,44 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using Unity.Netcode;
 using UnityEngine;
 
 public class WorldResourceContainer : NetworkBehaviour, IInteractable
 {
     public event EventHandler OnContainerEmpty;
+    public event EventHandler OnResourceRemoved;
 
-    [SerializeField]
-    private List<Outline> outlines;
     [SerializeField]
     private ResourceSO containedResourceSO;
     [SerializeField]
     private NetworkVariable<int> numberOfUses = new NetworkVariable<int>();
     [SerializeField]
     private bool isInfinte;
+    [SerializeField]
+    private WorldResourceContainerVisual visual;
+
+    private void Start()
+    {
+        numberOfUses.OnValueChanged += NumberOfUses_OnValueChanged;
+        UpdateIcons(numberOfUses.Value);
+    }
+
+    private void NumberOfUses_OnValueChanged(int previous, int current)
+    {
+        UpdateIcons(current);
+    }
+
+    private void UpdateIcons(int current)
+    {
+        if (current == 0)
+        {
+            visual.HideResourceIcons();
+            return;
+        }
+
+        visual.ShowResourceIcons();
+        visual.UpdateResourceIcons(containedResourceSO, current);
+    }
 
     public bool CanPlayerInteract(Player player)
     {
@@ -48,6 +71,10 @@ public class WorldResourceContainer : NetworkBehaviour, IInteractable
             {
                 OnContainerEmpty?.Invoke(this, EventArgs.Empty);
             }
+            else
+            {
+                OnResourceRemoved?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         AddResourceToContainerClientRpc(containerReference);
@@ -74,18 +101,12 @@ public class WorldResourceContainer : NetworkBehaviour, IInteractable
 
     public void OnDeselected()
     {
-        foreach (Outline outline in outlines)
-        {
-            outline.enabled = false;
-        }
+        visual.DisableOutline();
     }
 
     public void OnSelected()
     {
-        foreach (Outline outline in outlines)
-        {
-            outline.enabled = true;
-        }
+        visual.EnableOutline();
     }
 
     public void SetContainedResource(ResourceSO resourceSO)
