@@ -201,7 +201,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  outline: {fileID: 6559765840804885915}
+  outlines:
+  - {fileID: 6559765840804885915}
   containedResourceSO: {fileID: 11400000, guid: 57da9c1ebfcdd4941ab0cd0199bb88b9, type: 2}
   numberOfUses:
     m_InternalValue: 1

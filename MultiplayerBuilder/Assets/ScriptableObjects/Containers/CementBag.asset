@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7473f9ebabcdca84facf022eb92d4ffb, type: 3}
   m_Name: CementBag
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 1347557857214804184, guid: 601a1c225a5b75a4b985197d8d0d3400, type: 3}
   containerName: CementBag
   containableResources:
   - {fileID: 11400000, guid: e6ac9741d7d568043b57abb160d54f1e, type: 2}

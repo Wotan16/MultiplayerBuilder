@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7473f9ebabcdca84facf022eb92d4ffb, type: 3}
   m_Name: SandBag
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 4258393247029048920, guid: 4b98b0bfd74f26d4a8a2aa0449ddb316, type: 3}
   containerName: Sand Bag
   containableResources:
   - {fileID: 11400000, guid: e8f7e174742eddd4d8d81d9826964325, type: 2}

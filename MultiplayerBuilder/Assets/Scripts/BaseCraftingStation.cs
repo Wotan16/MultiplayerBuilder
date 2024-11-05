@@ -7,14 +7,36 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
     protected RecipeSO recipeSO;
 
     protected NetworkVariable<CraftingStationState> currentState = new NetworkVariable<CraftingStationState>();
-
+    protected CraftingStationState CurrentState { get { return currentState.Value; } }
     protected float timeToMixLeft;
     protected RecipeCompletionHadler recipeHandler;
+
+    [SerializeField]
+    private Collider craftingStationCollider;
+    [SerializeField]
+    private Collider worldResourceContainerCollider;
+    [SerializeField]
+    private WorldResourceContainer worldResourceContainer;
+    [SerializeField]
+    private ResourceSO outputResource;
+    [SerializeField]
+    private int amountOfResource;
 
     protected virtual void Awake()
     {
         currentState.Value = CraftingStationState.WaitingForIngridients;
         recipeHandler = new RecipeCompletionHadler(recipeSO);
+        craftingStationCollider.enabled = true;
+        worldResourceContainerCollider.enabled = false;
+        worldResourceContainer.SetContainedResource(outputResource);
+    }
+
+    protected virtual void Start()
+    {
+        if (IsServer)
+        {
+            worldResourceContainer.OnContainerEmpty += WorldResourceContainer_OnContainerEmpty;
+        }
     }
 
     private void Update()
@@ -26,7 +48,6 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
         {
             if (timeToMixLeft <= 0f)
             {
-                currentState.Value = CraftingStationState.WaitingUntilEmpty;
                 OnCraftingEnded();
                 return;
             }
@@ -36,7 +57,38 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
         }
     }
 
-    protected abstract void OnCraftingEnded();
+    private void WorldResourceContainer_OnContainerEmpty(object sender, System.EventArgs e)
+    {
+        currentState.Value = CraftingStationState.WaitingForIngridients;
+        recipeHandler = new RecipeCompletionHadler(recipeSO);
+        OnContainerEmptyClientRpc();
+    }
+
+    [ClientRpc]
+    private void OnContainerEmptyClientRpc()
+    {
+        if (!IsHost)
+            recipeHandler = new RecipeCompletionHadler(recipeSO);
+
+        craftingStationCollider.enabled = true;
+        worldResourceContainerCollider.enabled = false;
+        Debug.Log("Container Empty");
+    }
+
+    protected virtual void OnCraftingEnded()
+    {
+        currentState.Value = CraftingStationState.WaitingUntilEmpty;
+        worldResourceContainer.SetNumberOfUses(amountOfResource);
+        OnCraftingEndedClientRpc();
+    }
+
+    [ClientRpc]
+    private void OnCraftingEndedClientRpc()
+    {
+        worldResourceContainerCollider.enabled = true;
+        craftingStationCollider.enabled = false;
+        Debug.Log("Mixed");
+    }
 
     public virtual bool CanPlayerInteract(Player player)
     {
@@ -48,7 +100,6 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
 
     public virtual void OnInteract(Player player)
     {
-        int pickupIndex = InteractableManager.GetResourceSOIndex(player.CarriedContainer.ContainedResorceSO);
         AddResourceServerRpc(player);
     }
 
@@ -62,10 +113,20 @@ public abstract class BaseCraftingStation : NetworkBehaviour, IInteractable
             return;
 
         recipeHandler.AddIngredient(player.CarriedContainer.ContainedResorceSO);
+
+        int resourceIndex = InteractableManager.GetResourceSOIndex(player.CarriedContainer.ContainedResorceSO);
+        AddResourceClientRpc(resourceIndex);
         player.CarriedContainer.EmptyContainer();
 
         if (recipeHandler.IsRecipeCompleted())
             StartCrafting();
+    }
+
+    [ClientRpc]
+    private void AddResourceClientRpc(int resourceIndex)
+    {
+        ResourceSO resourceSO = InteractableManager.GetResourceSOFromIndex(resourceIndex);
+        recipeHandler.AddIngredient(resourceSO);
     }
 
     private void StartCrafting()

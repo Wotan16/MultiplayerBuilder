@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7473f9ebabcdca84facf022eb92d4ffb, type: 3}
   m_Name: Bucket
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 2352832722081840856, guid: 6c4a48563f4b4ef4ba8f4fefb71d1439, type: 3}
   containerName: Bucket
   containableResources:
   - {fileID: 11400000, guid: 57da9c1ebfcdd4941ab0cd0199bb88b9, type: 2}
+  - {fileID: 11400000, guid: a64852aba2ed78c4ea02b57ebc83edf1, type: 2}
   isDisposable: 0
   filledByDefault: 0

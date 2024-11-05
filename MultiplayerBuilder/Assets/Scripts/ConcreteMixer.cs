@@ -8,6 +8,7 @@ public class ConcreteMixer : BaseCraftingStation
 {
     [SerializeField]
     private ConcreteMixerVisual visual;
+    
 
     protected override void Awake()
     {
@@ -23,17 +24,5 @@ public class ConcreteMixer : BaseCraftingStation
     public override void OnDeselected()
     {
         visual.DisableOutline();
-    }
-
-
-    [ClientRpc]
-    private void EndedMixingClientRpc()
-    {
-        Debug.Log("Mixed");
-    }
-
-    protected override void OnCraftingEnded()
-    {
-        EndedMixingClientRpc();
     }
 }

@@ -1,11 +1,15 @@
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using Unity.Netcode;
 using UnityEngine;
 
 public class WorldResourceContainer : NetworkBehaviour, IInteractable
 {
+    public event EventHandler OnContainerEmpty;
+
     [SerializeField]
-    private Outline outline;
+    private List<Outline> outlines;
     [SerializeField]
     private ResourceSO containedResourceSO;
     [SerializeField]
@@ -28,17 +32,23 @@ public class WorldResourceContainer : NetworkBehaviour, IInteractable
 
     public void OnInteract(Player player)
     {
-        AddResourceToContainerServerRpc(player.CarriedContainer);
+        AddResourceToPlayerContainerServerRpc(player.CarriedContainer);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void AddResourceToContainerServerRpc(NetworkBehaviourReference containerReference)
+    private void AddResourceToPlayerContainerServerRpc(NetworkBehaviourReference containerReference)
     {
         if (!containerReference.TryGet(out Container container))
             return;
         container.AddResource(containedResourceSO);
         if (!isInfinte)
+        {
             numberOfUses.Value--;
+            if(numberOfUses.Value == 0)
+            {
+                OnContainerEmpty?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         AddResourceToContainerClientRpc(containerReference);
     }
@@ -51,13 +61,35 @@ public class WorldResourceContainer : NetworkBehaviour, IInteractable
         container.AddResource(containedResourceSO);
     }
 
+    public void SetNumberOfUses(int numberOfUses)
+    {
+        SetNumberOfUsesServerRpc(numberOfUses);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetNumberOfUsesServerRpc(int numberOfUses)
+    {
+        this.numberOfUses.Value = numberOfUses;
+    }
+
     public void OnDeselected()
     {
-        outline.enabled = false;
+        foreach (Outline outline in outlines)
+        {
+            outline.enabled = false;
+        }
     }
 
     public void OnSelected()
     {
-        outline.enabled = true;
+        foreach (Outline outline in outlines)
+        {
+            outline.enabled = true;
+        }
+    }
+
+    public void SetContainedResource(ResourceSO resourceSO)
+    {
+        containedResourceSO = resourceSO;
     }
 }
