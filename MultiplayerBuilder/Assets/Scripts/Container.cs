@@ -7,7 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(FollowTransform))]
 [RequireComponent(typeof(MyTransformSync))]
-public class Container : NetworkBehaviour, IInteractable
+public class Container : NetworkBehaviour, IInteractable, ICarriable
 {
     public event EventHandler OnContainedResourceSOChanged;
 
@@ -27,12 +27,16 @@ public class Container : NetworkBehaviour, IInteractable
     [SerializeField]
     private ResourceIconUI containerResourceUI;
 
+    [SerializeField]
+    private Transform leftHandPoint;
+    [SerializeField]
+    private Transform rightHandPoint;
+
     private Player carryingPlayer;
     private Rigidbody rb;
     private FollowTransform followTransform;
     private MyTransformSync worldTransformSync;
     
-
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -228,5 +232,15 @@ public class Container : NetworkBehaviour, IInteractable
     public static void SpawnContainer(ContainerSO containerSO, Vector3 position)
     {
         InteractableManager.Instance.SpawnContainer(containerSO, position);
+    }
+
+    public Transform GetLeftHandPoint()
+    {
+        return leftHandPoint;
+    }
+
+    public Transform GetRightHandPoint()
+    {
+        return rightHandPoint;
     }
 }

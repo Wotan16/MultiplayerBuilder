@@ -49,6 +49,9 @@ public class Player : NetworkBehaviour
     private Transform carriedObjectParent;
     public Transform CarriedObjectParent { get { return carriedObjectParent; } }
 
+    [SerializeField]
+    private PlayerHands hands;
+
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -167,12 +170,14 @@ public class Player : NetworkBehaviour
         {
             carriedContainer.OnDrop();
             carriedContainer = null;
+            hands.DisableRig();
         }
     }
 
     public void PickUpItem(Container container)
     {
         carriedContainer = container;
+        hands.EnableRig(container);
     }
 
     public void OnInteract()
@@ -187,8 +192,7 @@ public class Player : NetworkBehaviour
     {
         if (HandsBusy)
         {
-            carriedContainer.OnDrop();
-            carriedContainer = null;
+            DropItem();
         }
     }
 
