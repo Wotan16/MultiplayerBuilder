@@ -25,7 +25,7 @@ public class Container : NetworkBehaviour, IInteractable
     [SerializeField]
     private Outline outline;
     [SerializeField]
-    private ContainerResourceUI containerResourceUI;
+    private ResourceIconUI containerResourceUI;
 
     private Player carryingPlayer;
     private Rigidbody rb;

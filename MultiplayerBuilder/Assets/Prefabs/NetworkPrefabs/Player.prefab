@@ -3003,7 +3003,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1986276457
+  GlobalObjectIdHash: 2597627966
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -3033,7 +3033,7 @@ MonoBehaviour:
   gravity: -9.81
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 65
   groundOffset: -0.14
   groundRadius: 0.3
   jumpHeight: 2
@@ -3044,7 +3044,6 @@ MonoBehaviour:
   acceleration: 20
   interaction: {fileID: 4171841392473112655}
   carriedObjectParent: {fileID: 9196535785005579958}
-  testSO: {fileID: 11400000, guid: 6b9dfae81a9b0584f9d81fac8e637553, type: 2}
 --- !u!114 &3687186621788201367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3236,7 +3235,7 @@ CharacterController:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   m_LayerOverridePriority: 0
   m_ProvidesContacts: 0
   m_Enabled: 1

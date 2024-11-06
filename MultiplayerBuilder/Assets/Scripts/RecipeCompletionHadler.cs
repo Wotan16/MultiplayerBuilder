@@ -16,6 +16,7 @@ public class RecipeCompletionHadler
         {
             addedIgredients.Add(new Ingredient(resourceSO));
         }
+        return;
     }
 
     public void AddIngredient(ResourceSO resourceSO)

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WorldResourceContainerVisual : MonoBehaviour
+public class QuestObjectVisual : MonoBehaviour
 {
     [SerializeField]
     private List<Outline> outlines;
@@ -10,20 +10,19 @@ public class WorldResourceContainerVisual : MonoBehaviour
     [SerializeField]
     private ResourceIconUI iconPrefab;
 
-    public void UpdateResourceIcons(ResourceSO resourceSO, int numberOfUses)
+    public void UpdateResourceIcons(RecipeCompletionHadler recipeCompletionHadler)
     {
         ClearIcons();
 
-        if (numberOfUses == 0)
-        {
-            HideResourceIcons();
-            return;
-        }
-
-        for (int i = 0; i < numberOfUses; i++)
+        foreach (Ingredient ingredient in recipeCompletionHadler.AddedIgredients)
         {
             ResourceIconUI icon = Instantiate(iconPrefab, resourceIconsParent);
-            icon.SetResourceUI(resourceSO);
+            icon.SetResourceUI(ingredient.ResourceSO);
+
+            ResourceIconUI.IconStatus iconStatus = ingredient.Contained ?
+                ResourceIconUI.IconStatus.Copleted : ResourceIconUI.IconStatus.Required;
+
+            icon.SetIconStatus(iconStatus);
             icon.Show();
         }
     }

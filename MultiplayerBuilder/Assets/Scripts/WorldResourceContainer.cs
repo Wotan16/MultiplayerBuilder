@@ -16,6 +16,8 @@ public class WorldResourceContainer : NetworkBehaviour, IInteractable
     private bool isInfinte;
     [SerializeField]
     private WorldResourceContainerVisual visual;
+    [SerializeField]
+    private Collider coll;
 
     private void Start()
     {
@@ -90,12 +92,9 @@ public class WorldResourceContainer : NetworkBehaviour, IInteractable
 
     public void SetNumberOfUses(int numberOfUses)
     {
-        SetNumberOfUsesServerRpc(numberOfUses);
-    }
+        if (!IsServer)
+            return;
 
-    [ServerRpc(RequireOwnership = false)]
-    private void SetNumberOfUsesServerRpc(int numberOfUses)
-    {
         this.numberOfUses.Value = numberOfUses;
     }
 
@@ -112,5 +111,10 @@ public class WorldResourceContainer : NetworkBehaviour, IInteractable
     public void SetContainedResource(ResourceSO resourceSO)
     {
         containedResourceSO = resourceSO;
+    }
+
+    public void EnableCollider(bool value)
+    {
+        coll.enabled = value;
     }
 }
