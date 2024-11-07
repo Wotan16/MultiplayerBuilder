@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class BaseCraftingStation : NetworkBehaviour
 {
-    public event EventHandler OnResourceAddedOnClient;
     public event EventHandler OnStartedCraftingOnClient;
 
     [SerializeField]

@@ -57,6 +57,16 @@ public class Container : NetworkBehaviour, IInteractable, ICarriable
         }
     }
 
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+
+        if (IsCarried)
+        {
+            carryingPlayer.DropItem();
+        }
+    }
+
     private void Start()
     {
         if (IsServer)
@@ -68,19 +78,9 @@ public class Container : NetworkBehaviour, IInteractable, ICarriable
         containerResourceUI.Hide();
     }
 
-    public bool CanPlayerInteract(Player player)
-    {
-        return !IsCarried && !player.HandsBusy;
-    }
-
-    public void OnInteract(Player player)
-    {
-        SetCarriedPlayerServerRpc(player);
-    }
-
     public void OnSelected()
     {
-        if(!IsEmpty)
+        if (!IsEmpty)
             containerResourceUI.Show();
 
         outline.enabled = true;
@@ -88,13 +88,31 @@ public class Container : NetworkBehaviour, IInteractable, ICarriable
 
     public void OnDeselected()
     {
-        if(!IsCarried)
+        if (!IsCarried)
             containerResourceUI.Hide();
         outline.enabled = false;
     }
 
+    public bool CanPlayerInteract(Player player)
+    {
+        return !IsCarried && !player.HandsBusy;
+    }
+
+    public void OnInteract(Player player)
+    {
+        if (!IsHost)
+        {
+            player.PickUpItem(this);
+            rb.isKinematic = true;
+            followTransform.TargetTransform = player.CarriedObjectParent;
+            carryingPlayer = player;
+        }
+
+        SetCarriedPlayerServerRpc(player);
+    }
+
     [ServerRpc(RequireOwnership = false)]
-    private void SetCarriedPlayerServerRpc(NetworkBehaviourReference playerReference)
+    private void SetCarriedPlayerServerRpc(NetworkBehaviourReference playerReference, ServerRpcParams serverRpcParams = default)
     {
         if (!playerReference.TryGet(out Player player))
             return;
@@ -105,12 +123,15 @@ public class Container : NetworkBehaviour, IInteractable, ICarriable
         carryingPlayer = player;
         worldTransformSync.enableSync.Value = false;
 
-        SetCarriedPlayerClientRpc(playerReference);
+        SetCarriedPlayerClientRpc(playerReference, serverRpcParams.Receive.SenderClientId);
     }
 
     [ClientRpc]
-    private void SetCarriedPlayerClientRpc(NetworkBehaviourReference playerReference)
+    private void SetCarriedPlayerClientRpc(NetworkBehaviourReference playerReference, ulong senderClientId)
     {
+        if (IsHost || NetworkManager.Singleton.LocalClientId == senderClientId)
+            return;
+
         if (!playerReference.TryGet(out Player player))
             return;
 
@@ -122,22 +143,33 @@ public class Container : NetworkBehaviour, IInteractable, ICarriable
 
     public void OnDrop()
     {
-        DropItemServerRpc();
+        if (!IsHost)
+        {
+            carryingPlayer = null;
+            followTransform.TargetTransform = null;
+            containerResourceUI.Hide();
+        }
+        DropItemServerRpc(rb.linearVelocity);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void DropItemServerRpc()
+    private void DropItemServerRpc(Vector3 linearVelocity, ServerRpcParams serverRpcParams = default)
     {
         carryingPlayer = null;
         followTransform.TargetTransform = null;
         worldTransformSync.enableSync.Value = true;
         rb.isKinematic = false;
-        DropItemClientRpc();
+        rb.linearVelocity = linearVelocity;
+        containerResourceUI.Hide();
+        DropItemClientRpc(serverRpcParams.Receive.SenderClientId);
     }
 
     [ClientRpc]
-    private void DropItemClientRpc()
+    private void DropItemClientRpc(ulong senderClientId)
     {
+        if (IsHost || NetworkManager.Singleton.LocalClientId == senderClientId)
+            return;
+
         carryingPlayer = null;
         followTransform.TargetTransform = null;
         containerResourceUI.Hide();

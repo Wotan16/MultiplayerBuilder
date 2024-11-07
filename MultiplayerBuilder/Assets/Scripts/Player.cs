@@ -170,8 +170,21 @@ public class Player : NetworkBehaviour
         {
             carriedContainer.OnDrop();
             carriedContainer = null;
-            hands.DisableRig();
         }
+        hands.DisableRig();
+        DisableHandsRigServerRpc(NetworkManager.Singleton.LocalClientId);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void DisableHandsRigServerRpc(ulong senderClientId)
+    {
+        DisableHandsRigClientRpc(senderClientId);
+    }
+
+    [ClientRpc(RequireOwnership = false)]
+    private void DisableHandsRigClientRpc(ulong senderClientId)
+    {
+        hands.DisableRig();
     }
 
     public void PickUpItem(Container container)
@@ -190,10 +203,7 @@ public class Player : NetworkBehaviour
 
     public void OnInteractAlternative()
     {
-        if (HandsBusy)
-        {
-            DropItem();
-        }
+        DropItem();
     }
 
     #region InputEvents
