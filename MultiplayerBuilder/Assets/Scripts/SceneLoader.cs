@@ -15,10 +15,10 @@ public static class SceneLoader
 
     private static Scene targetScene;
 
-    public static void Load(Scene targetScene)
+    public static void Load(Scene targetScene, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
     {
         SceneLoader.targetScene = targetScene;
-        SceneManager.LoadScene(Scene.LoadingScene.ToString());
+        SceneManager.LoadScene(Scene.LoadingScene.ToString(), loadSceneMode);
     }
 
     public static void LoadNetwork(Scene targetScene)

@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,19 +10,22 @@ public class LobbyUI : MonoBehaviour
     [SerializeField]
     private Button quickJoinButton;
     [SerializeField]
-    private LobbyCreateUI lobbyCreateUI;
-    [SerializeField]
     private TMP_InputField lobbyCodeField;
     [SerializeField]
     private Button joinWithCodeButton;
     [SerializeField]
     private TMP_InputField playerNameField;
 
+    [SerializeField]
+    private MainMenuUI mainMenuUI;
+    [SerializeField]
+    private Button backToMenuButton;
+
     private void Awake()
     {
         cerateGameButton.onClick.AddListener(() =>
         {
-            lobbyCreateUI.Show();
+            MainSceneUI.Instance.SetMainSceneUIState(MainSceneUI.MainSceneUIState.CreateLobby);
         });
         quickJoinButton.onClick.AddListener(() =>
         {
@@ -30,6 +34,10 @@ public class LobbyUI : MonoBehaviour
         joinWithCodeButton.onClick.AddListener(() =>
         {
             GameLobby.Instance.JoinWithCode(lobbyCodeField.text);
+        });
+        backToMenuButton.onClick.AddListener(() =>
+        {
+            MainSceneUI.Instance.SetMainSceneUIState(MainSceneUI.MainSceneUIState.MainMenu);
         });
     }
 
@@ -40,5 +48,15 @@ public class LobbyUI : MonoBehaviour
         {
             GameController.Instance.SetPlayerName(newText);
         });
+    }
+
+    public void Show()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
     }
 }

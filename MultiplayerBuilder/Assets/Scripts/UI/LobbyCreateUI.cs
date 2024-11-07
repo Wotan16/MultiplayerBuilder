@@ -21,10 +21,8 @@ public class LobbyCreateUI : MonoBehaviour
         });
         closeButton.onClick.AddListener(() =>
         {
-            Hide();
+            MainSceneUI.Instance.SetMainSceneUIState(MainSceneUI.MainSceneUIState.Lobby);
         });
-
-        Hide();
     }
 
     public void Show()

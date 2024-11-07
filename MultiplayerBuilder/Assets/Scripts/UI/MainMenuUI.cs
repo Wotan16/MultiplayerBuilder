@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenuUI : MonoBehaviour
@@ -16,7 +17,17 @@ public class MainMenuUI : MonoBehaviour
         });
         playButton.onClick.AddListener(() =>
         {
-            SceneLoader.Load(SceneLoader.Scene.LobbyScene);
+            MainSceneUI.Instance.SetMainSceneUIState(MainSceneUI.MainSceneUIState.Lobby);
         });
+    }
+
+    public void Show()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
     }
 }
