@@ -26,7 +26,6 @@ public class GameController : NetworkBehaviour
     {
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
         playerName = PlayerPrefs.GetString(PLAYER_PREFS_PLAYER_NAME_MULTIPLAYER,
             "Player" + UnityEngine.Random.Range(100, 1000));
         playerDataNetworkList = new NetworkList<PlayerData>();

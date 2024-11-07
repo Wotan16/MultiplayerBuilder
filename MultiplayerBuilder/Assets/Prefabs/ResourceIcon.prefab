@@ -627,7 +627,7 @@ GameObject:
   - component: {fileID: 4780067345762921853}
   - component: {fileID: 1501928526844634027}
   m_Layer: 7
-  m_Name: IngredientIcon
+  m_Name: ResourceIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -670,7 +670,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e23391af6c1209148bb0b55728bc1853, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resourceImage: {fileID: 7461351605748739065}
+  iconImage: {fileID: 7461351605748739065}
   checkmarkObject: {fileID: 1140651380603085673}
   questionmarkObject: {fileID: 4400446684888374056}
 --- !u!1 &8564769079677804931

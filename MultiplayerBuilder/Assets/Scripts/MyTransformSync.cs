@@ -7,12 +7,10 @@ public class MyTransformSync : NetworkBehaviour
     private Rigidbody rb;
     private bool hasRB { get { return rb != null; } }
     public NetworkVariable<bool> enableSync = new NetworkVariable<bool>();
-    [SerializeField]
-    private float timeToLerp = 0.3f;
+    private float timeToLerp = 10f;
     private float timeToLerpDelta;
     private bool isLerping { get { return timeToLerpDelta > 0f; } }
-    [SerializeField]
-    private float lerpModifier = 5f;
+    private float lerpModifier = 7f;
     private Vector3 targetPosition;
     private Quaternion targetRotation;
 

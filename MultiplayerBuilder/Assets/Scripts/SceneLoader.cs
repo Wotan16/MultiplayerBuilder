@@ -8,7 +8,6 @@ public static class SceneLoader
     {
         MainMenuScene,
         TestScene,
-        LoadingScene,
         LobbyScene,
         CharacterSelectScene
     }
@@ -18,7 +17,7 @@ public static class SceneLoader
     public static void Load(Scene targetScene, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
     {
         SceneLoader.targetScene = targetScene;
-        SceneManager.LoadScene(Scene.LoadingScene.ToString(), loadSceneMode);
+        SceneManager.LoadScene(targetScene.ToString(), loadSceneMode);
     }
 
     public static void LoadNetwork(Scene targetScene)

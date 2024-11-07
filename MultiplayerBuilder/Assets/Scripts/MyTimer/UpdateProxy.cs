@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class UpdateProxy : MonoBehaviour
 {
-    private static UpdateProxy Instance;
+    public static UpdateProxy Instance;
     
     public static event Action OnUpdate;
 

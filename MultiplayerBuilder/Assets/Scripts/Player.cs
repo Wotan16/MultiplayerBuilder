@@ -206,9 +206,14 @@ public class Player : NetworkBehaviour
         DropItem();
     }
 
+    public void StopMovement()
+    {
+        inputDirection = Vector2.zero;
+    }
+
     #region InputEvents
 
-    public void OnMove(InputAction.CallbackContext context)
+    public void OnMove_Input(InputAction.CallbackContext context)
     {
         if (!IsOwner || !IsSpawned)
             return;
@@ -221,7 +226,7 @@ public class Player : NetworkBehaviour
         inputDirection = context.ReadValue<Vector2>();
     }
 
-    public void OnJump(InputAction.CallbackContext context)
+    public void OnJump_Input(InputAction.CallbackContext context)
     {
         if (!IsOwner || !IsSpawned)
             return;
@@ -239,7 +244,7 @@ public class Player : NetworkBehaviour
         }
     }
 
-    public void OnInteract(InputAction.CallbackContext context)
+    public void OnInteract_Input(InputAction.CallbackContext context)
     {
         if (!IsOwner || !IsSpawned)
             return;
@@ -250,7 +255,7 @@ public class Player : NetworkBehaviour
         OnInteract();
     }
 
-    public void OnInteractAlternative(InputAction.CallbackContext context)
+    public void OnInteractAlternative_Input(InputAction.CallbackContext context)
     {
         if (!IsOwner || !IsSpawned)
             return;
@@ -262,7 +267,5 @@ public class Player : NetworkBehaviour
     }
 
     #endregion
-
-
 }
     

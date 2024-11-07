@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ResourceIconUI : MonoBehaviour
+public class WorldIconUI : MonoBehaviour
 {
     [SerializeField]
-    private Image resourceImage;
+    private Image iconImage;
     [SerializeField]
     private GameObject checkmarkObject;
     [SerializeField]
@@ -44,14 +44,14 @@ public class ResourceIconUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void SetResourceUI(ResourceSO resourceSO)
+    public void SetSpriteUI(ResourceSO resourceSO)
     {
         if (resourceSO == null)
         {
             return;
         }
 
-        resourceImage.sprite = resourceSO.sprite;
+        iconImage.sprite = resourceSO.sprite;
     }
 
     public enum IconStatus

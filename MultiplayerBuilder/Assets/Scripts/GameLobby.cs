@@ -123,7 +123,8 @@ public class GameLobby : MonoBehaviour
             });
         
             RelayServerData relayServerData = AllocationUtils.ToRelayServerData(allocation, "dtls");
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+            UnityTransport unityTransport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            unityTransport.SetRelayServerData(relayServerData);
 
             GameController.Instance.StartHost();    
             SceneLoader.LoadNetwork(SceneLoader.Scene.CharacterSelectScene);

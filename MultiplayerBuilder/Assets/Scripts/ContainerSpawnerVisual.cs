@@ -1,18 +1,19 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class WorldResourceContainerVisual : MonoBehaviour
+public class ContainerSpawnerVisual : MonoBehaviour
 {
     [SerializeField]
     private List<Outline> outlines;
     [SerializeField]
     private Transform resourceIconsParent;
 
-    public void UpdateResourceIcons(ResourceSO resourceSO, int numberOfUses)
+    public void UpdateResourceIcons(ContainerSO containerSO, int numberOfUses)
     {
         ClearIcons();
 
-        if (numberOfUses == 0 || resourceSO == null)
+        if (numberOfUses == 0 || !containerSO.filledByDefault)
         {
             HideResourceIcons();
             return;
@@ -21,7 +22,7 @@ public class WorldResourceContainerVisual : MonoBehaviour
         for (int i = 0; i < numberOfUses; i++)
         {
             WorldIconUI icon = InteractableManager.CreateResourceIcon(resourceIconsParent);
-            icon.SetSpriteUI(resourceSO);
+            icon.SetSpriteUI(containerSO.containableResources.FirstOrDefault());
             icon.Show();
         }
     }

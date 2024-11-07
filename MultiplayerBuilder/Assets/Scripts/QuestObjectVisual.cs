@@ -7,8 +7,6 @@ public class QuestObjectVisual : MonoBehaviour
     private List<Outline> outlines;
     [SerializeField]
     private Transform resourceIconsParent;
-    [SerializeField]
-    private ResourceIconUI iconPrefab;
 
     public void UpdateResourceIcons(RecipeCompletionHadler recipeCompletionHadler)
     {
@@ -16,11 +14,14 @@ public class QuestObjectVisual : MonoBehaviour
 
         foreach (Ingredient ingredient in recipeCompletionHadler.AddedIgredients)
         {
-            ResourceIconUI icon = Instantiate(iconPrefab, resourceIconsParent);
-            icon.SetResourceUI(ingredient.ResourceSO);
+            if (ingredient.ResourceSO == null)
+                return;
 
-            ResourceIconUI.IconStatus iconStatus = ingredient.Contained ?
-                ResourceIconUI.IconStatus.Copleted : ResourceIconUI.IconStatus.Required;
+            WorldIconUI icon = InteractableManager.CreateResourceIcon(resourceIconsParent);
+            icon.SetSpriteUI(ingredient.ResourceSO);
+
+            WorldIconUI.IconStatus iconStatus = ingredient.Contained ?
+                WorldIconUI.IconStatus.Copleted : WorldIconUI.IconStatus.Required;
 
             icon.SetIconStatus(iconStatus);
             icon.Show();

@@ -25,7 +25,7 @@ public class Container : NetworkBehaviour, IInteractable, ICarriable
     [SerializeField]
     private Outline outline;
     [SerializeField]
-    private ResourceIconUI containerResourceUI;
+    private WorldIconUI containerResourceUI;
 
     [SerializeField]
     private Transform leftHandPoint;
@@ -69,12 +69,14 @@ public class Container : NetworkBehaviour, IInteractable, ICarriable
 
     private void Start()
     {
-        if (IsServer)
+        if (IsServer && !IsCarried)
             worldTransformSync.enableSync.Value = true;
         else
             rb.isKinematic = true;
 
-        containerResourceUI.SetResourceUI(ContainedResorceSO);
+        if(!IsEmpty)
+            containerResourceUI.SetSpriteUI(ContainedResorceSO);
+
         containerResourceUI.Hide();
     }
 
@@ -99,6 +101,11 @@ public class Container : NetworkBehaviour, IInteractable, ICarriable
     }
 
     public void OnInteract(Player player)
+    {
+        PickUpByPlayer(player);
+    }
+
+    public void PickUpByPlayer(Player player)
     {
         if (!IsHost)
         {
@@ -205,7 +212,7 @@ public class Container : NetworkBehaviour, IInteractable, ICarriable
     {
         ResourceSO resourceSO = InteractableManager.GetResourceSOFromIndex(resourceSOIndex);
         containedResourceSO = resourceSO;
-        containerResourceUI.SetResourceUI(ContainedResorceSO);
+        containerResourceUI.SetSpriteUI(ContainedResorceSO);
         containerResourceUI.Show();
         OnContainedResourceSOChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -263,7 +270,7 @@ public class Container : NetworkBehaviour, IInteractable, ICarriable
 
     public static void SpawnContainer(ContainerSO containerSO, Vector3 position)
     {
-        InteractableManager.Instance.SpawnContainer(containerSO, position);
+        InteractableManager.SpawnContainer(containerSO, position);
     }
 
     public Transform GetLeftHandPoint()
