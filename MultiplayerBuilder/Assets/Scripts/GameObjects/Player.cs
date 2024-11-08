@@ -1,13 +1,15 @@
 using Sirenix.OdinInspector;
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.Rendering.DebugUI;
 
 public class Player : NetworkBehaviour
 {
     public static Player LocalInstance { get; private set; }
+
+    public static event EventHandler OnLocalInstanceSpawned;
 
     [SerializeField]
     private float maxSpeed;
@@ -88,7 +90,10 @@ public class Player : NetworkBehaviour
     {
         base.OnNetworkSpawn();
         if (IsOwner)
+        {
             LocalInstance = this;
+            OnLocalInstanceSpawned?.Invoke(this, EventArgs.Empty);
+        }
 
         if (IsServer)
         {
