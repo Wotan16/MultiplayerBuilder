@@ -54,13 +54,17 @@ public class Player : NetworkBehaviour
     [SerializeField]
     private PlayerHands hands;
 
+    [Header("Death and Respawn")]
+
     private bool isDead;
     public bool IsDead { get { return isDead; } }
 
     [SerializeField]
     private GameObject playerVisual;
     [SerializeField]
-    private Transform ragdollPrefab;
+    private RagdollCharacter ragdollPrefab;
+    [SerializeField]
+    private Transform rootBone;
 
     private void Awake()
     {
@@ -75,7 +79,11 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsOwner || !IsSpawned) return;
+        if (!IsOwner || !IsSpawned)
+            return;
+
+        if(isDead)
+            return;
 
         CheckGround();
         HandleGravity();
@@ -229,32 +237,58 @@ public class Player : NetworkBehaviour
         if (!IsOwner)
             return;
 
-        DieServerRpc(NetworkManager.Singleton.LocalClientId);
-        
+        DieServerRpc();
+        Die();
     }
 
     [ServerRpc]
-    private void DieServerRpc(ulong senderClientId)
+    private void DieServerRpc()
     {
-        DieClientRpc(senderClientId);
+        DieClientRpc();
     }
 
     [ClientRpc(RequireOwnership = false)]
-    private void DieClientRpc(ulong senderClientId)
+    private void DieClientRpc()
     {
-        
+        if (IsOwner)
+            return;
+
+        Die();
     }
 
     private void Die()
     {
-        isDead = true;
-        Timer reviveTimer = new Timer(5f);
-        reviveTimer.OnTimerEnds += () =>
+        if (IsOwner)
         {
-            
+            controller.enabled = false;
+            DropItem();
+            StopMovement();
+        }
+
+        isDead = true;
+        playerVisual.SetActive(false);
+
+        float timeToRevive = 5f;
+
+        RagdollCharacter ragdoll = Instantiate(ragdollPrefab);
+        ragdoll.MatchWithHumanoidSkeleton(rootBone);
+        ragdoll.DestroyAfterTime(timeToRevive);
+        ragdoll.TurnOnRagdoll();
+
+        Timer reviveTimer = new Timer(timeToRevive);
+        reviveTimer.OnTimerEnds += Revive;
+    }
+
+    private void Revive()
+    {
+        if (IsOwner)
+        {
             transform.position = Vector3.zero;
-            isDead = false;
-        };
+            controller.enabled = true;
+        }
+
+        playerVisual.SetActive(true);
+        isDead = false;
     }
 
     #region InputEvents

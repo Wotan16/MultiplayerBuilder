@@ -3,17 +3,16 @@ using UnityEngine;
 
 public class RagdollCharacter : MonoBehaviour
 {
-    [SerializeField]
-    private float timeToDestroy;
     private float timeToDestroyDelta;
     [SerializeField]
     private Transform root;
+    private bool destroyAfterTime = false;
 
     private List<Rigidbody> ragdollBodyParts;
 
     private void Awake()
     {
-        timeToDestroyDelta = timeToDestroy;
+
         InitializeRigidbodies();
     }
 
@@ -33,12 +32,21 @@ public class RagdollCharacter : MonoBehaviour
 
     private void Update()
     {
-        if(timeToDestroy <= 0f)
+        if (!destroyAfterTime)
+            return;
+
+        if(timeToDestroyDelta <= 0f)
         {
             Destroy(gameObject);
             return;
         }
         timeToDestroyDelta -= Time.deltaTime;
+    }
+
+    public void DestroyAfterTime(float time)
+    {
+        destroyAfterTime = true;
+        timeToDestroyDelta = time;
     }
 
     public void MatchWithHumanoidSkeleton(Transform rootBone)

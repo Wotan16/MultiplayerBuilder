@@ -3,24 +3,13 @@ using Unity.Netcode;
 
 public class Test : MonoBehaviour
 {
-    public GameObject characterObject;
-    public Transform root;
-    public RagdollCharacter characterPrefab;
-    public RagdollCharacter ragdoll;
-
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.W))
         {
-            ragdoll = Instantiate(characterPrefab);
-            ragdoll.MatchWithHumanoidSkeleton(root);
-            characterObject.SetActive(false);
-        }
-
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            ragdoll.TurnOnRagdoll();
+            float speed = 3f;
+            transform.position = Vector3.zero;
         }
     }
 }
