@@ -282,4 +282,8 @@ public class Container : NetworkBehaviour, IInteractable, ICarriable
     {
         return rightHandPoint;
     }
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
 }

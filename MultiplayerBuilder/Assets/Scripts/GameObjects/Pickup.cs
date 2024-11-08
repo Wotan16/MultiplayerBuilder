@@ -115,4 +115,9 @@ public class Pickup : NetworkBehaviour, IInteractable
         OnPickupDespawned?.Invoke(this, EventArgs.Empty);
         base.OnNetworkDespawn();
     }
+
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class QuestObject : NetworkBehaviour,  IInteractable
 {
-    public event EventHandler OnRecipeCompleted;
+    public event EventHandler OnRecipeCompleted_Server;
 
     [SerializeField]
     private QuestObjectVisual visual;
@@ -12,6 +12,11 @@ public class QuestObject : NetworkBehaviour,  IInteractable
     private Collider coll;
 
     private RecipeCompletionHadler recipeHandler;
+
+    private void Awake()
+    {
+        visual.DisableOutline();
+    }
 
     public void SetRecipe(RecipeSO recipeSO)
     {
@@ -43,7 +48,7 @@ public class QuestObject : NetworkBehaviour,  IInteractable
         if (recipeHandler.IsRecipeCompleted())
         {
             OnRecipeCompletedClientRpc();
-            OnRecipeCompleted?.Invoke(this, EventArgs.Empty);
+            OnRecipeCompleted_Server?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -91,5 +96,9 @@ public class QuestObject : NetworkBehaviour,  IInteractable
     public void EnableCollider(bool value)
     {
         coll.enabled = value;
+    }
+    public GameObject GetGameObject()
+    {
+        return gameObject;
     }
 }

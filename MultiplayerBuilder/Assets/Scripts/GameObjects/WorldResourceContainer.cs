@@ -117,4 +117,8 @@ public class WorldResourceContainer : NetworkBehaviour, IInteractable
     {
         coll.enabled = value;
     }
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
 }

@@ -34,4 +34,9 @@ public class TestInteractable : MonoBehaviour, IInteractable
     {
         return true;
     }
+
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
 }

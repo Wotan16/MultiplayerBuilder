@@ -13,12 +13,19 @@ public class PlayerInteraction : NetworkBehaviour
     private LayerMask interactableMask;
     private IInteractable selectedInteractable;
     public IInteractable SelectedInteractable { get { return selectedInteractable; } }
+    public GameObject selected;
 
     private void Update()
     {
         if (!IsOwner || !IsSpawned) return;
+        HandleIneractableSelection();
+        selected = selectedInteractable == null ? null : selectedInteractable.GetGameObject();
+    }
 
+    private void HandleIneractableSelection()
+    {
         IInteractable nearestInteractable = GetNearestInteractable();
+
 
         if (nearestInteractable == null)
         {

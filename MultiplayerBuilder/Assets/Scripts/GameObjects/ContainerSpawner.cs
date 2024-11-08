@@ -102,4 +102,8 @@ public class ContainerSpawner : NetworkBehaviour, IInteractable
     {
         coll.enabled = value;
     }
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
 }

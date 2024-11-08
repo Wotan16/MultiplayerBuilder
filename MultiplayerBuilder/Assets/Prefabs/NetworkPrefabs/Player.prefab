@@ -3561,6 +3561,7 @@ MonoBehaviour:
   interactableMask:
     serializedVersion: 2
     m_Bits: 128
+  selected: {fileID: 0}
 --- !u!114 &2850332017767680609
 MonoBehaviour:
   m_ObjectHideFlags: 0

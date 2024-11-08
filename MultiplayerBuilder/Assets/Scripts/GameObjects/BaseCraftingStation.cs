@@ -33,7 +33,7 @@ public class BaseCraftingStation : NetworkBehaviour
         if (IsServer)
         {
             worldResourceContainer.OnContainerEmpty += WorldResourceContainer_OnContainerEmpty;
-            questObject.OnRecipeCompleted += QuestObject_OnRecipeCompleted;
+            questObject.OnRecipeCompleted_Server += QuestObject_OnRecipeCompleted;
         }
 
         worldResourceContainer.EnableCollider(false);
