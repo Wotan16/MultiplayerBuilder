@@ -1,16 +1,26 @@
 using UnityEngine;
 using Unity.Netcode;
 
-public class Test : NetworkBehaviour
+public class Test : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-    }
+    public GameObject characterObject;
+    public Transform root;
+    public RagdollCharacter characterPrefab;
+    public RagdollCharacter ragdoll;
 
-    // Update is called once per frame
-    void Update()
+
+    private void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            ragdoll = Instantiate(characterPrefab);
+            ragdoll.MatchWithHumanoidSkeleton(root);
+            characterObject.SetActive(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            ragdoll.TurnOnRagdoll();
+        }
     }
 }

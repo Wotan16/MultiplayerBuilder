@@ -54,6 +54,14 @@ public class Player : NetworkBehaviour
     [SerializeField]
     private PlayerHands hands;
 
+    private bool isDead;
+    public bool IsDead { get { return isDead; } }
+
+    [SerializeField]
+    private GameObject playerVisual;
+    [SerializeField]
+    private Transform ragdollPrefab;
+
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
@@ -216,11 +224,47 @@ public class Player : NetworkBehaviour
         inputDirection = Vector2.zero;
     }
 
+    public void KillPlayer()
+    {
+        if (!IsOwner)
+            return;
+
+        DieServerRpc(NetworkManager.Singleton.LocalClientId);
+        
+    }
+
+    [ServerRpc]
+    private void DieServerRpc(ulong senderClientId)
+    {
+        DieClientRpc(senderClientId);
+    }
+
+    [ClientRpc(RequireOwnership = false)]
+    private void DieClientRpc(ulong senderClientId)
+    {
+        
+    }
+
+    private void Die()
+    {
+        isDead = true;
+        Timer reviveTimer = new Timer(5f);
+        reviveTimer.OnTimerEnds += () =>
+        {
+            
+            transform.position = Vector3.zero;
+            isDead = false;
+        };
+    }
+
     #region InputEvents
 
     public void OnMove_Input(InputAction.CallbackContext context)
     {
         if (!IsOwner || !IsSpawned)
+            return;
+
+        if (isDead)
             return;
 
         if (!CanMove)
@@ -234,6 +278,9 @@ public class Player : NetworkBehaviour
     public void OnJump_Input(InputAction.CallbackContext context)
     {
         if (!IsOwner || !IsSpawned)
+            return;
+
+        if (isDead)
             return;
 
         if (!context.started)
@@ -254,6 +301,9 @@ public class Player : NetworkBehaviour
         if (!IsOwner || !IsSpawned)
             return;
 
+        if (isDead)
+            return;
+
         if (!context.started)
             return;
 
@@ -263,6 +313,9 @@ public class Player : NetworkBehaviour
     public void OnInteractAlternative_Input(InputAction.CallbackContext context)
     {
         if (!IsOwner || !IsSpawned)
+            return;
+
+        if (isDead)
             return;
 
         if (!context.started)
