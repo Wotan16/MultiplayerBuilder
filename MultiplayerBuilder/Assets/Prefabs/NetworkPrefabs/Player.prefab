@@ -2810,7 +2810,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7381448805711230498}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b2d8418b0b9634b1892b0268dd9c2743, type: 3}
   m_Name: 
@@ -3466,7 +3466,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  animator: {fileID: 9009307225833460628}
   maxSpeed: 5
+  acceleration: 20
+  rotationSpeed: 7
+  CanMove: 1
   gravity: -9.81
   groundMask:
     serializedVersion: 2
@@ -3475,16 +3479,12 @@ MonoBehaviour:
   groundRadius: 0.3
   jumpHeight: 2
   maxVerticalVelocity: 10
-  rotationSpeed: 7
-  animator: {fileID: 9009307225833460628}
-  CanMove: 1
-  acceleration: 20
-  interaction: {fileID: 4171841392473112655}
-  carriedObjectParent: {fileID: 9196535785005579958}
-  hands: {fileID: 2850332017767680609}
   playerVisual: {fileID: 7381448805711230498}
   ragdollPrefab: {fileID: 1068437135793259240, guid: 59eb96cf33242e3438cc8bc542a38992, type: 3}
   rootBone: {fileID: 7029653368359457448}
+  interaction: {fileID: 4171841392473112655}
+  carriedObjectParent: {fileID: 9196535785005579958}
+  hands: {fileID: 2850332017767680609}
 --- !u!114 &3687186621788201367
 MonoBehaviour:
   m_ObjectHideFlags: 0

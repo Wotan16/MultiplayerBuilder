@@ -36,7 +36,7 @@ public class GameLobby : MonoBehaviour
     {
         if (IsLobbyHost())
         {
-            heartbeatTimer.ResetTimer(HEARTBEAT_INTERVAL);
+            heartbeatTimer.Reset(HEARTBEAT_INTERVAL);
             LobbyService.Instance.SendHeartbeatPingAsync(joinedLobby.Id);
         }
     }

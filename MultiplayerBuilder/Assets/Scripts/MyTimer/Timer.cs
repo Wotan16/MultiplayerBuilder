@@ -26,9 +26,15 @@ public class Timer
         timeLeft -= Time.deltaTime;
     }
 
-    public void ResetTimer(float newTimeLeft)
+    public void Reset(float newTimeLeft)
     {
         timeLeft = newTimeLeft;
         UpdateProxy.OnUpdate += UpdateProxy_OnUpdate;
+    }
+
+    public void Stop()
+    {
+        UpdateProxy.OnUpdate -= UpdateProxy_OnUpdate;
+        OnTimerEnds = null;
     }
 }

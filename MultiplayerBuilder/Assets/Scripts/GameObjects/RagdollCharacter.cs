@@ -6,6 +6,8 @@ public class RagdollCharacter : MonoBehaviour
     private float timeToDestroyDelta;
     [SerializeField]
     private Transform root;
+    [SerializeField]
+    private Rigidbody chestRb;
     private bool destroyAfterTime = false;
 
     private List<Rigidbody> ragdollBodyParts;
@@ -98,9 +100,14 @@ public class RagdollCharacter : MonoBehaviour
         }
     }
 
-    public void PushRagdoll(Vector3 direction, float force, Collider collider)
+    public void PushRagdoll(Vector3 force)
+    {
+        chestRb.AddForceAtPosition(force, chestRb.transform.position, ForceMode.Impulse);
+    }
+
+    public void PushRagdoll(Vector3 force, Collider collider)
     {
         Rigidbody rb = collider.attachedRigidbody;
-        rb.AddForceAtPosition(direction * force, collider.transform.position, ForceMode.Impulse);
+        rb.AddForceAtPosition(force, collider.transform.position, ForceMode.Impulse);
     }
 }

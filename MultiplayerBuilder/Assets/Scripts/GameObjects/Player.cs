@@ -12,10 +12,23 @@ public class Player : NetworkBehaviour
     public static event EventHandler OnLocalInstanceSpawned;
 
     [SerializeField]
+    private Animator animator;
+
+    [Header("Movement")]
+    [SerializeField]
     private float maxSpeed;
     [SerializeField]
-    private float gravity;
+    private float acceleration;
+    [SerializeField]
+    private float rotationSpeed;
+    private float currentSpeed;
+    private Transform mainCameraTransform;
     private CharacterController controller;
+    public bool CanMove = false;
+
+    [Header("Gravity & Jump")]
+    [SerializeField]
+    private float gravity;
     [SerializeField]
     private LayerMask groundMask;
     [SerializeField]
@@ -26,45 +39,34 @@ public class Player : NetworkBehaviour
     private float jumpHeight;
     [SerializeField]
     private float maxVerticalVelocity;
-    [SerializeField]
-    private float rotationSpeed;
-    [SerializeField]
-    private Animator animator;
-
     private bool isGrounded;
     private float verticalVelocity;
     private Vector2 inputDirection;
-    public bool CanMove = false;
-    private Transform mainCameraTransform;
-
-    private float currentSpeed;
-    [SerializeField]
-    private float acceleration;
-
-    private Container carriedContainer;
-    public Container CarriedContainer { get { return carriedContainer; } }
-    public bool HandsBusy { get { return carriedContainer != null; } }
-
-    [SerializeField]
-    private PlayerInteraction interaction;
-    [SerializeField]
-    private Transform carriedObjectParent;
-    public Transform CarriedObjectParent { get { return carriedObjectParent; } }
-
-    [SerializeField]
-    private PlayerHands hands;
 
     [Header("Death and Respawn")]
-
-    private bool isDead;
-    public bool IsDead { get { return isDead; } }
-
     [SerializeField]
     private GameObject playerVisual;
     [SerializeField]
     private RagdollCharacter ragdollPrefab;
     [SerializeField]
     private Transform rootBone;
+    private bool isDead;
+    public bool IsDead { get { return isDead; } }
+    private Timer reviveTimer;
+    private GameObject ragdollObject;
+
+    [Header("Interaction")]
+    [SerializeField]
+    private PlayerInteraction interaction;
+    [SerializeField]
+    private Transform carriedObjectParent;
+    public Transform CarriedObjectParent { get { return carriedObjectParent; } }
+
+    private Container carriedContainer;
+    public Container CarriedContainer { get { return carriedContainer; } }
+    public bool HandsBusy { get { return carriedContainer != null; } }
+    [SerializeField]
+    private PlayerHands hands;
 
     private void Awake()
     {
@@ -79,6 +81,14 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
+        if (!IsOwner)
+        {
+            if (Input.GetKeyDown(KeyCode.Z))
+            {
+                KillPlayer();
+            }
+        }
+
         if (!IsOwner || !IsSpawned)
             return;
 
@@ -192,18 +202,11 @@ public class Player : NetworkBehaviour
             carriedContainer.OnDrop();
             carriedContainer = null;
         }
-        hands.DisableRig();
-        DisableHandsRigServerRpc(NetworkManager.Singleton.LocalClientId);
+        DisableHandsRigRpc();
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void DisableHandsRigServerRpc(ulong senderClientId)
-    {
-        DisableHandsRigClientRpc(senderClientId);
-    }
-
-    [ClientRpc(RequireOwnership = false)]
-    private void DisableHandsRigClientRpc(ulong senderClientId)
+    [Rpc(SendTo.Everyone)]
+    private void DisableHandsRigRpc()
     {
         hands.DisableRig();
     }
@@ -234,29 +237,47 @@ public class Player : NetworkBehaviour
 
     public void KillPlayer()
     {
-        if (!IsOwner)
-            return;
-
-        DieServerRpc();
-        Die();
+        KillPlayer(Vector3.zero);
     }
 
-    [ServerRpc]
-    private void DieServerRpc()
+    public void KillPlayer(Vector3 force)
     {
-        DieClientRpc();
-    }
-
-    [ClientRpc(RequireOwnership = false)]
-    private void DieClientRpc()
-    {
+        Die(force);
         if (IsOwner)
-            return;
-
-        Die();
+        {
+            OnOwnerPlayerDeadRpc(force);
+        }
+        else
+        {
+            RequestDeathValidationRpc(RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+        }
     }
 
-    private void Die()
+    [Rpc(SendTo.NotOwner)]
+    private void OnOwnerPlayerDeadRpc(Vector3 force)
+    {
+        if (isDead)
+            return;
+
+        Die(force);
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void RequestDeathValidationRpc(RpcParams rpcParams = default)
+    {
+        ValidateDeathRpc(isDead, RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp));
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void ValidateDeathRpc(bool isDead, RpcParams rpcParams = default)
+    {
+        if (isDead)
+            return;
+
+        Revive(transform.position);
+    }
+
+    private void Die(Vector3 force)
     {
         if (IsOwner)
         {
@@ -264,31 +285,43 @@ public class Player : NetworkBehaviour
             DropItem();
             StopMovement();
         }
-
         isDead = true;
         playerVisual.SetActive(false);
 
         float timeToRevive = 5f;
 
         RagdollCharacter ragdoll = Instantiate(ragdollPrefab);
+        ragdollObject = ragdoll.gameObject;
         ragdoll.MatchWithHumanoidSkeleton(rootBone);
         ragdoll.DestroyAfterTime(timeToRevive);
         ragdoll.TurnOnRagdoll();
+        ragdoll.PushRagdoll(force);
 
-        Timer reviveTimer = new Timer(timeToRevive);
-        reviveTimer.OnTimerEnds += Revive;
+        reviveTimer = new Timer(timeToRevive);
+        reviveTimer.OnTimerEnds += () => { Revive(Vector3.zero); };
     }
 
-    private void Revive()
+    private void Revive(Vector3 position)
     {
         if (IsOwner)
         {
-            transform.position = Vector3.zero;
+            transform.position = position;
             controller.enabled = true;
         }
 
         playerVisual.SetActive(true);
         isDead = false;
+        if (reviveTimer != null)
+            reviveTimer.Stop();
+        if (ragdollObject != null)
+            Destroy(ragdollObject);
+    }
+
+    public override void OnDestroy()
+    {
+        if (reviveTimer != null)
+            reviveTimer.Stop();
+        base.OnDestroy();
     }
 
     #region InputEvents
