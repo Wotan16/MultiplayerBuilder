@@ -2174,6 +2174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   barrelPrefab: {fileID: 8555485618631512364, guid: e3805c9eb3a8d5e4d9ccdc4abcc62dfe, type: 3}
+  timeToDestroyBarrels: 10
 --- !u!4 &1151644289
 Transform:
   m_ObjectHideFlags: 0
@@ -3094,7 +3095,7 @@ Transform:
   m_GameObject: {fileID: 1950675699}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.14717762, w: 0.9891101}
-  m_LocalPosition: {x: 4.34, y: 2.64, z: 13.73}
+  m_LocalPosition: {x: 4.34, y: 2.62, z: 13.73}
   m_LocalScale: {x: 20.633871, y: 0.5221, z: 5.4827}
   m_ConstrainProportionsScale: 0
   m_Children: []

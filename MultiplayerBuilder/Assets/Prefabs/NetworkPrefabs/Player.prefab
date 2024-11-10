@@ -3440,7 +3440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1986276457
+  GlobalObjectIdHash: 2597627966
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -3482,6 +3482,8 @@ MonoBehaviour:
   playerVisual: {fileID: 7381448805711230498}
   ragdollPrefab: {fileID: 1068437135793259240, guid: 59eb96cf33242e3438cc8bc542a38992, type: 3}
   rootBone: {fileID: 7029653368359457448}
+  deathValidationDelay: 0.4
+  confirmDeathDelay: 0.2
   interaction: {fileID: 4171841392473112655}
   carriedObjectParent: {fileID: 9196535785005579958}
   hands: {fileID: 2850332017767680609}

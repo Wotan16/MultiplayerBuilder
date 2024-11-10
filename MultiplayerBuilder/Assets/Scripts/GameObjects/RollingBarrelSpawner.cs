@@ -5,6 +5,8 @@ public class RollingBarrelSpawner : MonoBehaviour
 {
     [SerializeField]
     private RollingBarrel barrelPrefab;
+    [SerializeField]
+    private float timeToDestroyBarrels;
 
     private void Update()
     {
@@ -14,13 +16,13 @@ public class RollingBarrelSpawner : MonoBehaviour
         }
     }
 
-
     public void SpawnBarrel()
     {
         if (NetworkManager.Singleton.IsServer)
         {
             RollingBarrel barrel = Instantiate(barrelPrefab, transform.position, transform.rotation);
             barrel.NetworkObject.Spawn();
+            barrel.DestroyAfterTime(timeToDestroyBarrels);
         }
     }
 

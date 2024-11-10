@@ -8,14 +8,14 @@ public class RagdollCharacter : MonoBehaviour
     private Transform root;
     [SerializeField]
     private Rigidbody chestRb;
-    private bool destroyAfterTime = false;
+    private DestroyAfterTime destroyAfterTime;
 
     private List<Rigidbody> ragdollBodyParts;
 
     private void Awake()
     {
-
         InitializeRigidbodies();
+        destroyAfterTime = GetComponent<DestroyAfterTime>();
     }
 
     private void InitializeRigidbodies()
@@ -32,23 +32,9 @@ public class RagdollCharacter : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (!destroyAfterTime)
-            return;
-
-        if(timeToDestroyDelta <= 0f)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        timeToDestroyDelta -= Time.deltaTime;
-    }
-
     public void DestroyAfterTime(float time)
     {
-        destroyAfterTime = true;
-        timeToDestroyDelta = time;
+        destroyAfterTime.SetDestroyTimer(time);
     }
 
     public void MatchWithHumanoidSkeleton(Transform rootBone)

@@ -54,6 +54,12 @@ public class Player : NetworkBehaviour
     public bool IsDead { get { return isDead; } }
     private Timer reviveTimer;
     private GameObject ragdollObject;
+    [SerializeField]
+    private float deathValidationDelay = 0.1f;
+    private Timer deathValidationTimer;
+    [SerializeField]
+    private float confirmDeathDelay = 0.1f;
+    private Timer confirmDeathTimer;
 
     [Header("Interaction")]
     [SerializeField]
@@ -81,14 +87,6 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsOwner)
-        {
-            if (Input.GetKeyDown(KeyCode.Z))
-            {
-                KillPlayer();
-            }
-        }
-
         if (!IsOwner || !IsSpawned)
             return;
 
@@ -242,33 +240,54 @@ public class Player : NetworkBehaviour
 
     public void KillPlayer(Vector3 force)
     {
+        if (isDead)
+            return;
+
         Die(force);
+
         if (IsOwner)
         {
             OnOwnerPlayerDeadRpc(force);
         }
         else
         {
-            RequestDeathValidationRpc(RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+            deathValidationTimer = new Timer(deathValidationDelay);
+            deathValidationTimer.OnTimerEnds += () =>
+            {
+                RequestDeathValidationRpc(RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+            };
+
         }
     }
 
-    [Rpc(SendTo.NotOwner)]
+    [Rpc(SendTo.NotOwner, RequireOwnership = false)]
     private void OnOwnerPlayerDeadRpc(Vector3 force)
     {
-        if (isDead)
+        if (isDead) 
+        {
+            deathValidationTimer.Stop();
+            Debug.Log("death Validation Timer Stopped");
             return;
+        }
 
-        Die(force);
+        confirmDeathTimer = new Timer(confirmDeathDelay);
+        confirmDeathTimer.OnTimerEnds += () =>
+        {
+            if (isDead)
+                return;
+
+            Die(force);
+        };
     }
 
-    [Rpc(SendTo.SpecifiedInParams)]
+    [Rpc(SendTo.SpecifiedInParams, RequireOwnership = false)]
     private void RequestDeathValidationRpc(RpcParams rpcParams = default)
     {
         ValidateDeathRpc(isDead, RpcTarget.Single(rpcParams.Receive.SenderClientId, RpcTargetUse.Temp));
+        Debug.Log("Request received, isDead: " + isDead);
     }
 
-    [Rpc(SendTo.SpecifiedInParams)]
+    [Rpc(SendTo.SpecifiedInParams, RequireOwnership = false)]
     private void ValidateDeathRpc(bool isDead, RpcParams rpcParams = default)
     {
         if (isDead)
@@ -281,6 +300,7 @@ public class Player : NetworkBehaviour
     {
         if (IsOwner)
         {
+            Debug.Log("Died");
             controller.enabled = false;
             DropItem();
             StopMovement();
@@ -311,17 +331,30 @@ public class Player : NetworkBehaviour
 
         playerVisual.SetActive(true);
         isDead = false;
-        if (reviveTimer != null)
-            reviveTimer.Stop();
+
+        StopTimers();
+
         if (ragdollObject != null)
             Destroy(ragdollObject);
     }
 
     public override void OnDestroy()
     {
+        StopTimers();
+
+        base.OnDestroy();
+    }
+
+    private void StopTimers()
+    {
         if (reviveTimer != null)
             reviveTimer.Stop();
-        base.OnDestroy();
+
+        if (deathValidationTimer != null)
+            deathValidationTimer.Stop();
+
+        if(confirmDeathTimer != null)
+            confirmDeathTimer.Stop();
     }
 
     #region InputEvents
