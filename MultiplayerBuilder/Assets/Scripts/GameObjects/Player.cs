@@ -1,6 +1,7 @@
 using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
+using Unity.Multiplayer.Center.NetcodeForGameObjectsExample;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -25,6 +26,18 @@ public class Player : NetworkBehaviour
     private Transform mainCameraTransform;
     private CharacterController controller;
     public bool CanMove = false;
+
+    [SerializeField]
+    private MyClientNetworkTransform networkTransform;
+    public PlayerAnchor anchor;
+    private float syncTime = 0.033f;
+    private float syncTimeDelta;
+    private Vector3 targetPosRelativeToAnchor;
+    private bool tiedToAnchor;
+    [SerializeField]
+    private float lerpModifier;
+    [SerializeField]
+    private float interpolationTimeout;
 
     [Header("Gravity & Jump")]
     [SerializeField]
@@ -87,27 +100,97 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsOwner || !IsSpawned)
+        if (IsOwner)
+        {
+            if (isDead)
+                return;
+
+            CheckGround();
+            HandleGravity();
+            HandleAcceleration();
+            Move();
+            RotateTowardMovement();
+
+            animator.SetBool("IsGrounded", isGrounded);
+            animator.SetBool("IsCarrying", HandsBusy);
+
+            HandleAnchorSync();
+
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+            }
+        }
+        else
+        {
+            if (tiedToAnchor)
+            {
+                InterpolateToTargetPos();
+            }
+        }
+    }
+
+    private void HandleAnchorSync()
+    {
+        if (anchor == null)
             return;
 
-        if(isDead)
+        if (syncTimeDelta <= 0f)
+        {
+            Vector3 offsetToAnchor = transform.position - anchor.transform.position;
+            SyncPositionRelativeToAnchorRpc(offsetToAnchor, anchor);
+            syncTimeDelta = syncTime;
+            return;
+        }
+        syncTimeDelta -= Time.deltaTime;
+    }
+
+    public void SetAnchor(PlayerAnchor anchor)
+    {
+        this.anchor = anchor;
+        SetNetworkTransformEnabledRpc(false);
+    }
+
+    public void RemoveAnchor()
+    {
+        if (anchor == null)
             return;
 
-        CheckGround();
-        HandleGravity();
-        HandleAcceleration();
-        Move();
-        RotateTowardMovement();
+        anchor = null;
+        SetNetworkTransformEnabledRpc(true);
+    }
 
-        animator.SetBool("IsGrounded", isGrounded);
-        animator.SetBool("IsCarrying", HandsBusy);
+    [Rpc(SendTo.Everyone)]
+    private void SetNetworkTransformEnabledRpc(bool enabled)
+    {
+        if (!IsOwner)
+        {
+            tiedToAnchor = !enabled;
+            controller.enabled = enabled;
+        }
+        else
+        {
+            if (enabled)
+                networkTransform.DisableInterpolationTeporarily(interpolationTimeout);
+        }
+        networkTransform.enabled = enabled;
+    }
 
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-        }
+    [Rpc(SendTo.NotOwner)]
+    private void SyncPositionRelativeToAnchorRpc(Vector3 offsetToAnchor, NetworkBehaviourReference anchorReference)
+    {
+        if (!anchorReference.TryGet(out PlayerAnchor anchor))
+            return;
+
+        targetPosRelativeToAnchor = anchor.transform.position + offsetToAnchor;
+    }
+
+    private void InterpolateToTargetPos()
+    {
+        transform.position = Vector3.Lerp(transform.position, targetPosRelativeToAnchor, Time.deltaTime * lerpModifier);
     }
 
     public override void OnNetworkSpawn()
@@ -146,7 +229,8 @@ public class Player : NetworkBehaviour
         Vector3 directionVector = GetMoveDirection();
         Vector3 moveVector = directionVector * currentSpeed * Time.deltaTime;
         Vector3 gravityVector = new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime;
-        controller.Move(moveVector + gravityVector);
+        Vector3 anchorMovement = anchor != null ? anchor.movementDelta : Vector3.zero;
+        controller.Move(moveVector + gravityVector + anchorMovement);
 
         float animatorSpeedValue = currentSpeed / maxSpeed;
         animator.SetFloat("Speed", animatorSpeedValue);
@@ -192,6 +276,8 @@ public class Player : NetworkBehaviour
         Vector3 direction = (rightMovement + forwardMovement).normalized;
         return direction;
     }
+
+    
 
     public void DropItem()
     {

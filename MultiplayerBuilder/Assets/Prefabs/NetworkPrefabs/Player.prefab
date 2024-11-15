@@ -3400,7 +3400,7 @@ GameObject:
   - component: {fileID: 2011079949725464746}
   - component: {fileID: 2117256821886959061}
   - component: {fileID: 4879967075693104710}
-  - component: {fileID: 3687186621788201367}
+  - component: {fileID: 5016020801279362410}
   - component: {fileID: 8411601462090408324}
   - component: {fileID: 4171841392473112655}
   - component: {fileID: 2850332017767680609}
@@ -3471,6 +3471,10 @@ MonoBehaviour:
   acceleration: 20
   rotationSpeed: 7
   CanMove: 1
+  networkTransform: {fileID: 5016020801279362410}
+  anchor: {fileID: 0}
+  lerpModifier: 19
+  interpolationTimeout: 0.03
   gravity: -9.81
   groundMask:
     serializedVersion: 2
@@ -3487,7 +3491,7 @@ MonoBehaviour:
   interaction: {fileID: 4171841392473112655}
   carriedObjectParent: {fileID: 9196535785005579958}
   hands: {fileID: 2850332017767680609}
---- !u!114 &3687186621788201367
+--- !u!114 &5016020801279362410
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3496,7 +3500,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9027548830791114403}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da52bf8bbc1de48cfb221a6ff30f7972, type: 3}
+  m_Script: {fileID: 11500000, guid: 332c1bf3ac860aa4cb1ded3bef8139bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
@@ -3523,6 +3527,7 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+  timeBeforeInterpolate: 0
 --- !u!143 &8411601462090408324
 CharacterController:
   m_ObjectHideFlags: 0
