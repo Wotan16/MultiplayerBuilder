@@ -3404,6 +3404,7 @@ GameObject:
   - component: {fileID: 8411601462090408324}
   - component: {fileID: 4171841392473112655}
   - component: {fileID: 2850332017767680609}
+  - component: {fileID: 209272549272657743}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -3440,7 +3441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2597627966
+  GlobalObjectIdHash: 1986276457
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -3587,6 +3588,28 @@ MonoBehaviour:
   playerHandsRig: {fileID: 8493757724687313612}
   leftHandFollow: {fileID: 1235523378594087491}
   rightHandFollow: {fileID: 561633935533752372}
+--- !u!114 &209272549272657743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9027548830791114403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f21f55d4ea7a1a45b4ed4e889ae3ac0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  target: {fileID: 2011079949725464746}
+  TargetCamera: {fileID: 0}
+  fadedAlpha: 0.33
+  retainShadows: 1
+  targetPositionOffset: {x: 0, y: 1, z: 0}
+  fadeSpeed: 5
+  objectsBlockingView: []
 --- !u!1 &9050209768860926295
 GameObject:
   m_ObjectHideFlags: 0

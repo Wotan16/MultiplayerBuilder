@@ -196,10 +196,16 @@ public class Player : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
         if (IsOwner)
         {
             LocalInstance = this;
             OnLocalInstanceSpawned?.Invoke(this, EventArgs.Empty);
+        }
+        else
+        {
+            FadeObjectBlockingObject blockingObject = GetComponent<FadeObjectBlockingObject>();
+            Destroy(blockingObject);
         }
 
         if (IsServer)
