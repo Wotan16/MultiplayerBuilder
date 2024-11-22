@@ -1,6 +1,3 @@
-using System.Globalization;
-using Unity.Android.Gradle.Manifest;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

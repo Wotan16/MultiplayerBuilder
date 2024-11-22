@@ -1,10 +1,12 @@
-using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class GlobalQuest : NetworkBehaviour
 {
+    public event EventHandler OnGlobalQuestCompleted;
+
     [SerializeField]
     private List<BuildingQuest> buildingQuests;
     private BuildingQuest activeQuest { get { return buildingQuests[0]; } }
@@ -27,18 +29,23 @@ public class GlobalQuest : NetworkBehaviour
     {
         if (buildingQuests.Count <= 1)
         {
-            Debug.Log("Peremoga");
-            //PEREMOGA
+            OnAllQuestsCompletedRpc();
             return;
         }
 
         OnQuestCompleteClientRpc();
     }
 
-    [ClientRpc]
+    [Rpc(SendTo.NotServer)]
     private void OnQuestCompleteClientRpc()
     {
         SetNextQuestActive();
+    }
+
+    [Rpc(SendTo.Everyone)]
+    private void OnAllQuestsCompletedRpc()
+    {
+        OnGlobalQuestCompleted?.Invoke(this, EventArgs.Empty);
     }
 
     private void SetNextQuestActive()

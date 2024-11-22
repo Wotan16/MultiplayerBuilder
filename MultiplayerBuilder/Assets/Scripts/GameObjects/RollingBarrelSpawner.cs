@@ -7,18 +7,28 @@ public class RollingBarrelSpawner : MonoBehaviour
     private RollingBarrel barrelPrefab;
     [SerializeField]
     private float timeToDestroyBarrels;
+    private Timer spawnTimer;
+    [SerializeField]
+    private float timeToSpawn;
 
-    private void Update()
+    private bool IsServer { get { return NetworkManager.Singleton.IsServer; } }
+
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.T))
+        if (IsServer)
         {
-            SpawnBarrel();
+            spawnTimer = new Timer(timeToSpawn);
+            spawnTimer.OnTimerEnds += () =>
+            {
+                SpawnBarrel();
+                spawnTimer.Reset(timeToSpawn);
+            };
         }
     }
 
     public void SpawnBarrel()
     {
-        if (NetworkManager.Singleton.IsServer)
+        if (IsServer)
         {
             RollingBarrel barrel = Instantiate(barrelPrefab, transform.position, transform.rotation);
             barrel.NetworkObject.Spawn();
@@ -32,5 +42,11 @@ public class RollingBarrelSpawner : MonoBehaviour
         Gizmos.DrawSphere(transform.position, 0.2f);
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, transform.forward);
+    }
+
+    private void OnDestroy()
+    {
+        if( spawnTimer != null ) 
+            spawnTimer.Stop();
     }
 }

@@ -53,6 +53,7 @@ public class Player : NetworkBehaviour
     [SerializeField]
     private float maxVerticalVelocity;
     private bool isGrounded;
+    public bool IsGrounded {  get { return isGrounded; } }
     private float verticalVelocity;
     private Vector2 inputDirection;
 

@@ -2896,6 +2896,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   barrelPrefab: {fileID: 8555485618631512364, guid: e3805c9eb3a8d5e4d9ccdc4abcc62dfe, type: 3}
   timeToDestroyBarrels: 10
+  timeToSpawn: 0
 --- !u!4 &1151644289
 Transform:
   m_ObjectHideFlags: 0
